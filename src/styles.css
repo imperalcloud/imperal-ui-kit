@@ -1,4 +1,21 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+/* @imperal/ui-kit styles — utilities + design tokens ONLY.
+ *
+ * Deliberately NO Tailwind `preflight` (global element reset) and NO global
+ * `@tailwindcss/typography` plugin: importing this into a host app
+ * (docs.imperal.io, or any consumer) must NOT restyle the host's own
+ * <h1>/<p>/<blockquote>/lists. Tailwind UTILITIES are class-based, so they only
+ * affect the kit's own components (which carry those classes); the tokens just
+ * define CSS custom properties. This keeps the kit a good citizen in any page. */
+@layer theme, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 @import "./styles/tokens.css";
 @import "./styles/semantic-utilities.css";
+
+/* The only reset the kit needs: Tailwind utilities assume border-box. This is
+ * universal (every modern site already sets it) so it is safe globally. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
