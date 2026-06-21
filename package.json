@@ -1,7 +1,7 @@
 {
   "name": "@imperal/ui-kit",
   "version": "0.1.0",
-  "description": "Imperal declarative UI renderer — shared React component library.",
+  "description": "Imperal declarative UINode -> React renderer \u2014 the same UI components the Imperal Panel uses.",
   "type": "module",
   "exports": {
     ".": {
@@ -10,7 +10,10 @@
     },
     "./styles.css": "./dist/styles.css"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup && npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
     "build:css": "npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
@@ -21,17 +24,39 @@
     "react-dom": ">=19"
   },
   "peerDependenciesMeta": {
-    "@tiptap/react": { "optional": true },
-    "@tiptap/starter-kit": { "optional": true },
-    "@tiptap/extension-placeholder": { "optional": true },
-    "cytoscape": { "optional": true },
-    "cytoscape-cose-bilkent": { "optional": true },
-    "react-cytoscapejs": { "optional": true },
-    "recharts": { "optional": true },
-    "react-markdown": { "optional": true },
-    "remark-gfm": { "optional": true },
-    "react-syntax-highlighter": { "optional": true },
-    "dompurify": { "optional": true }
+    "@tiptap/react": {
+      "optional": true
+    },
+    "@tiptap/starter-kit": {
+      "optional": true
+    },
+    "@tiptap/extension-placeholder": {
+      "optional": true
+    },
+    "cytoscape": {
+      "optional": true
+    },
+    "cytoscape-cose-bilkent": {
+      "optional": true
+    },
+    "react-cytoscapejs": {
+      "optional": true
+    },
+    "recharts": {
+      "optional": true
+    },
+    "react-markdown": {
+      "optional": true
+    },
+    "remark-gfm": {
+      "optional": true
+    },
+    "react-syntax-highlighter": {
+      "optional": true
+    },
+    "dompurify": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4",
@@ -61,12 +86,19 @@
     "typescript": "^5"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
-    "access": "restricted"
+    "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imperalcloud/imperal-ui-kit.git"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "keywords": [
+    "imperal",
+    "ui",
+    "declarative",
+    "react",
+    "renderer",
+    "ui-kit"
+  ]
 }
