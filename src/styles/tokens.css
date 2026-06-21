@@ -1,0 +1,419 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Imperal Design Tokens
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Tier 1 — Primitives (immutable foundation) ─────────────────────────── */
+:root {
+  --imp-gray-50:  #fafafa;
+  --imp-gray-100: #f4f4f5;
+  --imp-gray-200: #e4e4e7;
+  --imp-gray-300: #d4d4d8;
+  --imp-gray-400: #a1a1aa;
+  --imp-gray-500: #71717a;
+  --imp-gray-600: #52525b;
+  --imp-gray-700: #3f3f46;
+  --imp-gray-800: #27272a;
+  --imp-gray-900: #18181b;
+  --imp-gray-950: #09090b;
+
+  --imp-blue-50:  #eff6ff;
+  --imp-blue-100: #dbeafe;
+  --imp-blue-200: #bfdbfe;
+  --imp-blue-300: #93c5fd;
+  --imp-blue-400: #60a5fa;
+  --imp-blue-500: #3b82f6;
+  --imp-blue-600: #2563eb;
+  --imp-blue-700: #1d4ed8;
+  --imp-blue-800: #1e40af;
+  --imp-blue-900: #1e3a8a;
+  --imp-blue-950: #172554;
+
+  --imp-green-50:  #f0fdf4;
+  --imp-green-100: #dcfce7;
+  --imp-green-200: #bbf7d0;
+  --imp-green-300: #86efac;
+  --imp-green-400: #4ade80;
+  --imp-green-500: #22c55e;
+  --imp-green-600: #16a34a;
+  --imp-green-700: #15803d;
+  --imp-green-800: #166534;
+  --imp-green-900: #14532d;
+  --imp-green-950: #052e16;
+
+  --imp-red-50:  #fef2f2;
+  --imp-red-100: #fee2e2;
+  --imp-red-200: #fecaca;
+  --imp-red-300: #fca5a5;
+  --imp-red-400: #f87171;
+  --imp-red-500: #ef4444;
+  --imp-red-600: #dc2626;
+  --imp-red-700: #b91c1c;
+  --imp-red-800: #991b1b;
+  --imp-red-900: #7f1d1d;
+  --imp-red-950: #450a0a;
+
+  --imp-yellow-50:  #fefce8;
+  --imp-yellow-100: #fef9c3;
+  --imp-yellow-200: #fef08a;
+  --imp-yellow-300: #fde047;
+  --imp-yellow-400: #facc15;
+  --imp-yellow-500: #eab308;
+  --imp-yellow-600: #ca8a04;
+  --imp-yellow-700: #a16207;
+  --imp-yellow-800: #854d0e;
+  --imp-yellow-900: #713f12;
+  --imp-yellow-950: #422006;
+
+  --imp-space-0:  0;
+  --imp-space-1:  0.25rem;
+  --imp-space-2:  0.5rem;
+  --imp-space-3:  0.75rem;
+  --imp-space-4:  1rem;
+  --imp-space-5:  1.25rem;
+  --imp-space-6:  1.5rem;
+  --imp-space-8:  2rem;
+  --imp-space-10: 2.5rem;
+  --imp-space-12: 3rem;
+  --imp-space-16: 4rem;
+  --imp-space-20: 5rem;
+  --imp-space-24: 6rem;
+  --imp-space-32: 8rem;
+
+  --imp-font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --imp-font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --imp-text-xs:   0.75rem;
+  --imp-text-sm:   0.875rem;
+  --imp-text-base: 1rem;
+  --imp-text-lg:   1.125rem;
+  --imp-text-xl:   1.25rem;
+  --imp-text-2xl:  1.5rem;
+  --imp-text-3xl:  1.875rem;
+  --imp-text-4xl:  2.25rem;
+
+  --imp-weight-normal:   400;
+  --imp-weight-medium:   500;
+  --imp-weight-semibold: 600;
+  --imp-weight-bold:     700;
+
+  --imp-leading-tight:   1.25;
+  --imp-leading-normal:  1.5;
+  --imp-leading-relaxed: 1.75;
+
+  --imp-duration-fast:   100ms;
+  --imp-duration-normal: 200ms;
+  --imp-duration-slow:   400ms;
+  --imp-ease-out:    cubic-bezier(0, 0, 0.2, 1);
+  --imp-ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --imp-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --imp-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --imp-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --imp-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --imp-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  --imp-z-dropdown: 1000;
+  --imp-z-sticky:   1020;
+  --imp-z-fixed:    1030;
+  --imp-z-modal:    1040;
+  --imp-z-popover:  1050;
+  --imp-z-toast:    1060;
+
+  --imp-opacity-disabled: 0.5;
+  --imp-opacity-hover:    0.08;
+  --imp-opacity-overlay:  0.6;
+
+  --imp-border-thin:    1px;
+  --imp-border-default: 1px;
+  --imp-border-thick:   2px;
+  --imp-border-focus:   2px;
+
+  --imp-icon-xs: 12px;
+  --imp-icon-sm: 14px;
+  --imp-icon-md: 16px;
+  --imp-icon-lg: 20px;
+  --imp-icon-xl: 24px;
+
+  --imp-blur-sm: 4px;
+  --imp-blur-md: 8px;
+  --imp-blur-lg: 16px;
+
+  --imp-density-factor: 1;
+  --imp-radius-scale:   1;
+
+  --imp-radius-sm:   calc(0.25rem  * var(--imp-radius-scale));
+  --imp-radius-md:   calc(0.375rem * var(--imp-radius-scale));
+  --imp-radius-lg:   calc(0.5rem   * var(--imp-radius-scale));
+  --imp-radius-xl:   calc(0.75rem  * var(--imp-radius-scale));
+  --imp-radius-full: 9999px;
+
+  --imp-height-sm: calc(1.75rem * var(--imp-density-factor));
+  --imp-height-md: calc(2.25rem * var(--imp-density-factor));
+  --imp-height-lg: calc(2.75rem * var(--imp-density-factor));
+
+  --imp-btn-padding-x-sm: calc(0.75rem * var(--imp-density-factor));
+  --imp-btn-padding-y-sm: calc(0.25rem * var(--imp-density-factor));
+  --imp-btn-padding-x-md: calc(1rem    * var(--imp-density-factor));
+  --imp-btn-padding-y-md: calc(0.5rem  * var(--imp-density-factor));
+  --imp-btn-padding-x-lg: calc(1.5rem  * var(--imp-density-factor));
+  --imp-btn-padding-y-lg: calc(0.75rem * var(--imp-density-factor));
+  --imp-btn-radius:       var(--imp-radius-md);
+  --imp-btn-font-size:    var(--imp-text-sm);
+  --imp-btn-font-weight:  var(--imp-weight-medium);
+  --imp-btn-transition:   background-color var(--imp-duration-fast) var(--imp-ease-out),
+                          color            var(--imp-duration-fast) var(--imp-ease-out),
+                          border-color     var(--imp-duration-fast) var(--imp-ease-out);
+
+  --imp-icon-btn-size-sm: calc(1.75rem * var(--imp-density-factor));
+  --imp-icon-btn-size-md: calc(2.25rem * var(--imp-density-factor));
+  --imp-icon-btn-size-lg: calc(2.75rem * var(--imp-density-factor));
+  --imp-icon-btn-radius:  var(--imp-radius-md);
+
+  --imp-card-padding:     calc(1.5rem * var(--imp-density-factor));
+  --imp-card-padding-sm:  calc(1rem   * var(--imp-density-factor));
+  --imp-card-radius:      var(--imp-radius-lg);
+  --imp-card-border-w:    var(--imp-border-thin);
+
+  --imp-input-padding-x:  calc(0.75rem * var(--imp-density-factor));
+  --imp-input-padding-y:  calc(0.5rem  * var(--imp-density-factor));
+  --imp-input-radius:     var(--imp-radius-md);
+  --imp-input-font-size:  var(--imp-text-sm);
+  --imp-input-border-w:   var(--imp-border-thin);
+  --imp-input-height:     var(--imp-height-md);
+
+  --imp-modal-padding:       calc(1.5rem * var(--imp-density-factor));
+  --imp-modal-radius:        var(--imp-radius-xl);
+  --imp-modal-max-width:     28rem;
+  --imp-modal-max-width-lg:  36rem;
+  --imp-modal-backdrop-alpha: 0.6;
+
+  --imp-pill-padding-x-sm: calc(0.5rem  * var(--imp-density-factor));
+  --imp-pill-padding-y-sm: calc(0.125rem * var(--imp-density-factor));
+  --imp-pill-padding-x-md: calc(0.75rem * var(--imp-density-factor));
+  --imp-pill-padding-y-md: calc(0.25rem * var(--imp-density-factor));
+  --imp-pill-radius:       var(--imp-radius-full);
+
+  --imp-menu-padding:        calc(0.25rem * var(--imp-density-factor));
+  --imp-menu-radius:         var(--imp-radius-md);
+  --imp-menu-border-w:       var(--imp-border-thin);
+  --imp-menu-item-padding-x: calc(0.75rem * var(--imp-density-factor));
+  --imp-menu-item-padding-y: calc(0.5rem  * var(--imp-density-factor));
+  --imp-menu-item-radius:    var(--imp-radius-sm);
+
+  --imp-tooltip-padding-x: calc(0.5rem  * var(--imp-density-factor));
+  --imp-tooltip-padding-y: calc(0.25rem * var(--imp-density-factor));
+  --imp-tooltip-radius:    var(--imp-radius-sm);
+  --imp-tooltip-font-size: var(--imp-text-xs);
+
+  --imp-row-padding-x:    calc(0.75rem * var(--imp-density-factor));
+  --imp-row-padding-y:    calc(0.5rem  * var(--imp-density-factor));
+
+  --imp-field-gap:        calc(0.25rem * var(--imp-density-factor));
+  --imp-form-gap:         calc(1rem    * var(--imp-density-factor));
+
+  --imp-layout-gap:       calc(1rem * var(--imp-density-factor));
+  --imp-layout-gap-lg:    calc(2rem * var(--imp-density-factor));
+
+  --imp-focus-ring-width:  2px;
+  --imp-focus-ring-offset: 2px;
+
+  --imp-page-padding:        calc(1.5rem  * var(--imp-density-factor));
+  --imp-page-gap:            calc(1.5rem  * var(--imp-density-factor));
+  --imp-page-header-gap:     calc(1rem    * var(--imp-density-factor));
+  --imp-section-gap:         calc(0.75rem * var(--imp-density-factor));
+  --imp-section-header-gap:  calc(0.5rem  * var(--imp-density-factor));
+
+  --imp-sidebar-padding-y:   calc(0.75rem  * var(--imp-density-factor));
+  --imp-sidebar-gap:         calc(0.375rem * var(--imp-density-factor));
+  --imp-sidebar-width:       3.5rem;
+
+  --imp-ext-pane-padding:    var(--imp-page-padding);
+}
+
+:root[data-theme="light"] {
+  --imp-color-primary:       var(--imp-blue-600);
+  --imp-color-primary-hover: var(--imp-blue-700);
+  --imp-color-accent:        var(--imp-blue-500);
+  --imp-color-success:       var(--imp-green-600);
+  --imp-color-warning:       var(--imp-yellow-500);
+  --imp-color-danger:        var(--imp-red-600);
+  --imp-color-info:          var(--imp-blue-400);
+
+  --imp-color-surface-0: #ffffff;
+  --imp-color-surface-1: var(--imp-gray-50);
+  --imp-color-surface-2: var(--imp-gray-100);
+  --imp-color-surface-3: var(--imp-gray-200);
+
+  --imp-color-text:            var(--imp-gray-900);
+  --imp-color-text-muted:      var(--imp-gray-600);
+  --imp-color-text-subtle:     var(--imp-gray-400);
+  --imp-color-text-on-primary: #ffffff;
+
+  --imp-color-border-subtle: var(--imp-gray-200);
+  --imp-color-border:        var(--imp-gray-300);
+  --imp-color-border-strong: var(--imp-gray-400);
+
+  --imp-color-focus-ring: rgb(from var(--imp-color-primary) r g b / 0.4);
+
+  --imp-chart-series-1: var(--imp-blue-500);
+  --imp-chart-series-2: var(--imp-green-500);
+  --imp-chart-series-3: var(--imp-red-500);
+  --imp-chart-series-4: var(--imp-yellow-500);
+  --imp-chart-series-5: var(--imp-blue-700);
+  --imp-chart-series-6: var(--imp-green-700);
+  --imp-chart-series-7: var(--imp-red-700);
+  --imp-chart-series-8: var(--imp-yellow-700);
+
+  --imp-progress-track: rgb(from var(--imp-color-surface-2) r g b / 0.6);
+  --imp-progress-fill:  var(--imp-color-primary);
+
+  --imp-scrollbar-thumb:       rgb(from var(--imp-color-text) r g b / 0.08);
+  --imp-scrollbar-thumb-hover: rgb(from var(--imp-color-text) r g b / 0.15);
+
+  --imp-chart-axis: var(--imp-color-text-muted);
+  --imp-chart-grid: var(--imp-color-border-subtle);
+
+  --imp-graph-node-default: var(--imp-color-surface-2);
+  --imp-graph-edge-default: var(--imp-color-border);
+
+  --imp-code-bg: rgb(from var(--imp-color-surface-2) r g b / 0.5);
+}
+
+:root,
+:root[data-theme="dark"] {
+  --imp-color-primary:       var(--imp-blue-500);
+  --imp-color-primary-hover: var(--imp-blue-400);
+  --imp-color-accent:        var(--imp-blue-400);
+  --imp-color-success:       var(--imp-green-500);
+  --imp-color-warning:       var(--imp-yellow-500);
+  --imp-color-danger:        var(--imp-red-500);
+  --imp-color-info:          var(--imp-blue-300);
+
+  --imp-color-surface-0: var(--imp-gray-950);
+  --imp-color-surface-1: var(--imp-gray-900);
+  --imp-color-surface-2: var(--imp-gray-800);
+  --imp-color-surface-3: var(--imp-gray-700);
+
+  --imp-color-text:            var(--imp-gray-50);
+  --imp-color-text-muted:      var(--imp-gray-400);
+  --imp-color-text-subtle:     var(--imp-gray-600);
+  --imp-color-text-on-primary: #ffffff;
+
+  --imp-color-border-subtle: var(--imp-gray-800);
+  --imp-color-border:        var(--imp-gray-700);
+  --imp-color-border-strong: var(--imp-gray-600);
+
+  --imp-scrollbar-thumb:       rgb(255 255 255 / 0.08);
+  --imp-scrollbar-thumb-hover: rgb(255 255 255 / 0.15);
+  --imp-code-bg:               rgb(255 255 255 / 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --imp-color-primary:       var(--imp-blue-500);
+    --imp-color-primary-hover: var(--imp-blue-400);
+    --imp-color-accent:        var(--imp-blue-400);
+    --imp-color-success:       var(--imp-green-500);
+    --imp-color-warning:       var(--imp-yellow-500);
+    --imp-color-danger:        var(--imp-red-500);
+    --imp-color-info:          var(--imp-blue-300);
+
+    --imp-color-surface-0: var(--imp-gray-950);
+    --imp-color-surface-1: var(--imp-gray-900);
+    --imp-color-surface-2: var(--imp-gray-800);
+    --imp-color-surface-3: var(--imp-gray-700);
+
+    --imp-color-text:            var(--imp-gray-50);
+    --imp-color-text-muted:      var(--imp-gray-400);
+    --imp-color-text-subtle:     var(--imp-gray-600);
+    --imp-color-text-on-primary: #ffffff;
+
+    --imp-color-border-subtle: var(--imp-gray-800);
+    --imp-color-border:        var(--imp-gray-700);
+    --imp-color-border-strong: var(--imp-gray-600);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --imp-duration-fast:   0ms;
+    --imp-duration-normal: 0ms;
+    --imp-duration-slow:   0ms;
+  }
+}
+
+@theme inline {
+  --color-primary:       var(--imp-color-primary);
+  --color-primary-hover: var(--imp-color-primary-hover);
+  --color-accent:        var(--imp-color-accent);
+  --color-success:       var(--imp-color-success);
+  --color-warning:       var(--imp-color-warning);
+  --color-danger:        var(--imp-color-danger);
+  --color-info:          var(--imp-color-info);
+
+  --color-surface-0: var(--imp-color-surface-0);
+  --color-surface-1: var(--imp-color-surface-1);
+  --color-surface-2: var(--imp-color-surface-2);
+  --color-surface-3: var(--imp-color-surface-3);
+
+  --color-text:            var(--imp-color-text);
+  --color-text-muted:      var(--imp-color-text-muted);
+  --color-text-subtle:     var(--imp-color-text-subtle);
+  --color-text-on-primary: var(--imp-color-text-on-primary);
+
+  --color-border-subtle: var(--imp-color-border-subtle);
+  --color-border:        var(--imp-color-border);
+  --color-border-strong: var(--imp-color-border-strong);
+
+  --radius-sm:   var(--imp-radius-sm);
+  --radius-md:   var(--imp-radius-md);
+  --radius-lg:   var(--imp-radius-lg);
+  --radius-xl:   var(--imp-radius-xl);
+  --radius-full: var(--imp-radius-full);
+
+  --color-gray-950:    var(--imp-color-surface-0);
+  --color-gray-900:    var(--imp-color-surface-1);
+  --color-gray-800:    var(--imp-color-surface-2);
+  --color-gray-700:    var(--imp-color-surface-3);
+  --color-zinc-950:    var(--imp-color-surface-0);
+  --color-zinc-900:    var(--imp-color-surface-1);
+  --color-zinc-800:    var(--imp-color-surface-2);
+  --color-zinc-700:    var(--imp-color-surface-3);
+  --color-neutral-950: var(--imp-color-surface-0);
+  --color-neutral-900: var(--imp-color-surface-1);
+  --color-neutral-800: var(--imp-color-surface-2);
+  --color-neutral-700: var(--imp-color-surface-3);
+  --color-slate-950:   var(--imp-color-surface-0);
+  --color-slate-900:   var(--imp-color-surface-1);
+  --color-slate-800:   var(--imp-color-surface-2);
+  --color-slate-700:   var(--imp-color-surface-3);
+
+  --color-gray-50:     var(--imp-color-text);
+  --color-gray-100:    var(--imp-color-text);
+  --color-gray-200:    var(--imp-color-text);
+  --color-gray-300:    var(--imp-color-text);
+  --color-gray-400:    var(--imp-color-text-muted);
+  --color-gray-500:    var(--imp-color-text-muted);
+  --color-gray-600:    var(--imp-color-text-subtle);
+  --color-zinc-50:     var(--imp-color-text);
+  --color-zinc-100:    var(--imp-color-text);
+  --color-zinc-200:    var(--imp-color-text);
+  --color-zinc-300:    var(--imp-color-text);
+  --color-zinc-400:    var(--imp-color-text-muted);
+  --color-zinc-500:    var(--imp-color-text-muted);
+  --color-zinc-600:    var(--imp-color-text-subtle);
+
+  --color-blue-500:    var(--imp-color-accent);
+  --color-blue-600:    var(--imp-color-primary);
+  --color-blue-700:    var(--imp-color-primary-hover);
+
+  --color-red-500:     var(--imp-color-danger);
+  --color-red-600:     var(--imp-color-danger);
+  --color-green-500:   var(--imp-color-success);
+  --color-green-600:   var(--imp-color-success);
+  --color-yellow-400:  var(--imp-color-warning);
+  --color-yellow-500:  var(--imp-color-warning);
+
+  --font-sans: var(--imp-font-sans);
+  --font-mono: var(--imp-font-mono);
+}

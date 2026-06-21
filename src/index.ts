@@ -1,0 +1,63 @@
+// @imperal/ui-kit — declarative React renderer
+import { registerAllComponents } from './register-all';
+
+registerAllComponents();
+
+export { DeclarativeRenderer, renderChildren, useOnConfirm, OnConfirmContext } from './DeclarativeRenderer';
+export type { OnConfirmFn } from './DeclarativeRenderer';
+export { registerComponent, getComponent, hasComponent, listRegistered } from './registry';
+export { registerAllComponents } from './register-all';
+
+export type { UINode, UIAction, UIComponent, ListItemData, Column, ChartDataPoint } from './types';
+
+export { Stack } from './components/Stack';
+export { Grid } from './components/Grid';
+export { DTabs } from './components/DTabs';
+export { DText } from './components/DText';
+export { DBadge } from './components/DBadge';
+export { DAvatar } from './components/DAvatar';
+export { DStat } from './components/DStat';
+export { DList } from './components/DList';
+export { DButton } from './components/DButton';
+export { DIcon } from './components/DIcon';
+export { DCard } from './components/DCard';
+export { DAlert } from './components/DAlert';
+export { DProgress } from './components/DProgress';
+export { DChart } from './components/DChart';
+export { DDataTable } from './components/DDataTable';
+export { DGraph } from './components/DGraph';
+export { DForm } from './components/DForm';
+export { DAccordion } from './components/DAccordion';
+export { DAudio } from './components/DAudio';
+export { DBulkUpload } from './components/DBulkUpload';
+export { DCode } from './components/DCode';
+export { DDatePicker } from './components/DDatePicker';
+export { DDialog } from './components/DDialog';
+export { DDivider } from './components/DDivider';
+export { DEmpty } from './components/DEmpty';
+export { DError } from './components/DError';
+export { DFileUpload } from './components/DFileUpload';
+export { DHeader } from './components/DHeader';
+export { DHtml } from './components/DHtml';
+export { DImage } from './components/DImage';
+export { DInput } from './components/DInput';
+export { DKeyValue } from './components/DKeyValue';
+export { DLink } from './components/DLink';
+export { DLoading } from './components/DLoading';
+export { DMarkdown } from './components/DMarkdown';
+export { DMenu } from './components/DMenu';
+export { DMultiSelect } from './components/DMultiSelect';
+export { DPage } from './components/DPage';
+export { DRichEditor } from './components/DRichEditor';
+export { DSection } from './components/DSection';
+export { DSelect } from './components/DSelect';
+export { DSlideOver } from './components/DSlideOver';
+export { DSlider } from './components/DSlider';
+export { DStats } from './components/DStats';
+export { DTagInput } from './components/DTagInput';
+export { DTextArea } from './components/DTextArea';
+export { DTimeline } from './components/DTimeline';
+export { DToggle } from './components/DToggle';
+export { DTooltip } from './components/DTooltip';
+export { DTree } from './components/DTree';
+export { DVideo } from './components/DVideo';

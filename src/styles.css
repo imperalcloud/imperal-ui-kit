@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "./styles/tokens.css";
+@import "./styles/semantic-utilities.css";

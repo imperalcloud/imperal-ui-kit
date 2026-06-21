@@ -1,0 +1,30 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm'],
+  dts: true,
+  external: [
+    'react',
+    'react-dom',
+    'react/jsx-runtime',
+    '@tiptap/react',
+    '@tiptap/starter-kit',
+    '@tiptap/extension-placeholder',
+    'cytoscape',
+    'cytoscape-cose-bilkent',
+    'react-cytoscapejs',
+    'recharts',
+    'react-markdown',
+    'remark-gfm',
+    'react-syntax-highlighter',
+    'react-syntax-highlighter/dist/cjs/prism',
+    'react-syntax-highlighter/dist/cjs/styles/prism/one-dark',
+    'dompurify',
+    'lucide-react',
+    'tailwind-merge',
+  ],
+  treeshake: true,
+  clean: true,
+  splitting: false,
+});
