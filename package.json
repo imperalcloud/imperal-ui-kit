@@ -15,7 +15,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup && npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
+    "build": "tsup && npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}' && node scripts/scope-css.mjs",
     "build:css": "npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit"
   },
@@ -61,6 +61,9 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4",
     "@tailwindcss/typography": "^0.5",
+    "@tiptap/extension-placeholder": "^3.22.2",
+    "@tiptap/react": "^3.22.2",
+    "@tiptap/starter-kit": "^3.22.2",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -70,16 +73,15 @@
     "cytoscape-cose-bilkent": "^4.1.0",
     "dompurify": "^3.3.3",
     "lucide-react": "^0.468.0",
+    "postcss": "^8.5.15",
+    "postcss-prefixwrap": "^1.58.0",
     "react": "19.1.0",
     "react-cytoscapejs": "^2.0.0",
     "react-dom": "19.1.0",
     "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.13.3",
     "remark-gfm": "^4.0.1",
-    "react-syntax-highlighter": "^15.6.1",
-    "@tiptap/react": "^3.22.2",
-    "@tiptap/starter-kit": "^3.22.2",
-    "@tiptap/extension-placeholder": "^3.22.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^4",
     "tsup": "^8",
