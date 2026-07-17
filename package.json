@@ -1,6 +1,6 @@
 {
   "name": "@imperal/ui-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Imperal declarative UINode -> React renderer \u2014 the same UI components the Imperal Panel uses.",
   "type": "module",
   "exports": {
