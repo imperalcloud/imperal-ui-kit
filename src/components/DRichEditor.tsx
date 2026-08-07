@@ -140,7 +140,7 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
   }, []);
 
   return (
-    <div className="flex flex-col rounded-md border border-default bg-panel overflow-hidden">
+    <div className="surface flex flex-col overflow-hidden">
       {/* Toolbar */}
       {toolbar && editor && (
         <div className="flex items-center flex-wrap gap-0 px-2 py-1.5 border-b border-hair bg-app/50">

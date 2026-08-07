@@ -68,7 +68,7 @@ export function ToastProvider({ children, duration = 5000 }: { children: React.R
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[var(--imp-z-toast)] flex flex-col items-center gap-2 p-4 sm:items-end" aria-live="polite" aria-atomic="false">
         {items.map(item => {
           const Icon = toastIcons[item.tone];
-          return <div key={item.id} role={item.tone === 'danger' ? 'alert' : 'status'} className={`pointer-events-auto flex w-full max-w-[min(92vw,26rem)] items-start gap-2 rounded-lg border border-default bg-panel p-3 text-sm text-body shadow-xl toast-${item.tone}`}><Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" /><span className="min-w-0 flex-1 overflow-wrap-anywhere">{item.message}</span><button type="button" aria-label="Dismiss" onClick={() => dismiss(item.id)} className="icon-btn-sm grid place-items-center text-muted hover:bg-raised focus-ring"><X aria-hidden="true" className="size-4" /></button></div>;
+          return <div key={item.id} role={item.tone === 'danger' ? 'alert' : 'status'} className={`surface-overlay pointer-events-auto flex w-full max-w-[min(92vw,26rem)] items-start gap-2 p-3 text-sm text-body toast-${item.tone}`}><Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" /><span className="min-w-0 flex-1 overflow-wrap-anywhere">{item.message}</span><button type="button" aria-label="Dismiss" onClick={() => dismiss(item.id)} className="icon-btn-sm grid place-items-center text-muted hover:bg-raised focus-ring"><X aria-hidden="true" className="size-4" /></button></div>;
         })}
       </div>
     </ToastContext.Provider>

@@ -5,7 +5,7 @@ export const DCode: UIComponent = ({ node }) => {
   const { content, line_numbers = false } = node.props as { content?: string; line_numbers?: boolean };
   const lines = content?.split('\n') || [];
   return (
-    <pre className="bg-panel border border-hair rounded-md p-3 overflow-x-auto text-sm">
+    <pre className="surface bg-code p-3 overflow-x-auto text-sm">
       <code>
         {lines.map((line: string, i: number) => (
           <div key={i} className="flex">

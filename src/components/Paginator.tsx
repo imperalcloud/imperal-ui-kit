@@ -21,7 +21,7 @@ export default function Paginator({ page, totalPages, totalItems, loading, onPag
   if (totalPages <= 1 && totalItems <= 0) return null;
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2 border-t border-hair/40 flex-shrink-0">
+    <div className="flex items-center gap-1.5 px-3 py-2 border-t divide-hairline flex-shrink-0">
       <button onClick={() => onPageChange(page - 1)} disabled={page <= 1 || loading}
         className="p-0.5 rounded text-muted hover:text-body disabled:opacity-20 disabled:cursor-not-allowed transition-colors">
         <ChevronLeft size={14} />

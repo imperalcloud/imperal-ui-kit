@@ -58,12 +58,12 @@ function PlainBlock({ children, language, filename }: Props) {
   return (
     <div className="relative my-2">
       {(language || filename) && (
-        <div className="flex items-center justify-between px-3 py-1.5 bg-surface-1 border border-subtle rounded-t-lg border-b-0">
+        <div className="flex items-center justify-between px-3 py-1.5 bg-surface-1 border divide-hairline rounded-t-lg border-b-0">
           <span className="text-[.625rem] text-text-subtle uppercase tracking-wider">{filename ?? language}</span>
           <CopyButton text={children} />
         </div>
       )}
-      <pre className={`bg-surface-0 border border-subtle ${language || filename ? 'rounded-b-lg' : 'rounded-lg'} p-3 overflow-x-auto max-h-[25rem] overflow-y-auto`}>
+      <pre className={`bg-surface-0 border divide-hairline ${language || filename ? 'rounded-b-lg' : 'rounded-lg'} p-3 overflow-x-auto max-h-[25rem] overflow-y-auto`}>
         <code className="text-[.8125rem] text-text font-mono">{children}</code>
       </pre>
     </div>
@@ -85,11 +85,11 @@ export default function CodeBlock({ language, filename, children }: Props) {
 
   return (
     <div className="relative my-2">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-surface-1 border border-subtle rounded-t-lg border-b-0">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-surface-1 border divide-hairline rounded-t-lg border-b-0">
         <span className="text-[.625rem] text-text-subtle uppercase tracking-wider">{filename ?? language}</span>
         <CopyButton text={children} />
       </div>
-      <div className="max-h-[25rem] overflow-y-auto overflow-x-auto border border-subtle border-t-0 rounded-b-lg">
+      <div className="max-h-[25rem] overflow-y-auto overflow-x-auto border divide-hairline border-t-0 rounded-b-lg">
         <Suspense fallback={<pre style={{ margin: 0, padding: '0.75rem', fontSize: '0.8125rem' }}>{children}</pre>}>
           <SyntaxHighlighter
             language={language}

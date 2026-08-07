@@ -441,7 +441,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     return (
       <div
         ref={containerRef}
-        className="flex items-center justify-center rounded-lg border border-hair/50 bg-panel/40 text-sm text-muted"
+        className="surface flex items-center justify-center text-sm text-muted"
         style={{ height }}
       >
         Empty graph — no entities to display.
@@ -453,7 +453,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
   const totalEdges = edges.length;
 
   return (
-    <figure aria-label={title} className="flex flex-col overflow-hidden rounded-lg border border-hair bg-panel">
+    <figure aria-label={title} className="surface flex flex-col overflow-hidden">
       <figcaption className="sr-only">{title}. {description || `${totalNodes} nodes and ${totalEdges} relationships.`}</figcaption>
       <details className="border-b border-hair p-2 text-sm text-body">
         <summary className="cursor-pointer font-medium focus-ring">Accessible graph data</summary>
@@ -463,7 +463,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         </div>
       </details>
       {/* Row 1: search + layout + action buttons + edge label toggle */}
-      <div className="flex items-center gap-2 p-2 border-b border-hair/50 flex-wrap bg-panel/60">
+      <div className="flex items-center gap-2 p-2 border-b divide-hairline flex-wrap bg-panel/60">
         <input
           type="text"
           placeholder="Search entities..."
@@ -520,7 +520,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
 
       {/* Row 2: type filter checkboxes */}
       {uniqueTypes.length > 0 && (
-        <div className="flex items-center gap-2 p-2 border-b border-hair/50 flex-wrap bg-panel/40">
+        <div className="flex items-center gap-2 p-2 border-b divide-hairline flex-wrap bg-panel/40">
           <span className="text-xs text-muted uppercase tracking-wide">Types:</span>
           {uniqueTypes.map((t) => {
             const hidden = hiddenTypes.has(t);
@@ -549,7 +549,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
       )}
 
       {/* Row 3: sliders */}
-      <div className="flex items-center gap-6 p-2 border-b border-hair/50 flex-wrap bg-panel/40">
+      <div className="flex items-center gap-6 p-2 border-b divide-hairline flex-wrap bg-panel/40">
         <label className="flex items-center gap-2 text-xs text-body">
           <span>Min mentions:</span>
           <span className="font-mono text-body min-w-[1.5rem] text-right">{minMentions}</span>
@@ -600,7 +600,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
             Loading graph renderer…
           </div>
         )}
-        <div className="absolute bottom-2 right-2 text-[.625rem] text-muted bg-black/70 px-2 py-1 rounded border border-hair/50 pointer-events-none font-mono">
+        <div className="absolute bottom-2 right-2 text-[.625rem] text-muted bg-black/70 px-2 py-1 rounded border divide-hairline pointer-events-none font-mono">
           Showing {visibleNodeCount} / {totalNodes} nodes · {visibleEdgeCount} / {totalEdges} edges
           · {layout} · {lastAction}
         </div>

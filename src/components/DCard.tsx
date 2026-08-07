@@ -59,10 +59,10 @@ export const DCard: UIComponent = ({ node, onAction }) => {
       onClick={isClickable ? handleClick : undefined}
       onKeyDown={isClickable ? handleKeyDown : undefined}
       className={[
-        'flex flex-col bg-card/60 card-shape',
-        border ? 'border border-hair' : '',
+        'flex flex-col',
+        border ? 'surface-raised' : 'bg-card/60 card-shape',
         padding ? 'card-pad' : '',
-        isClickable ? 'cursor-pointer hover:bg-card transition-colors focus-ring' : '',
+        isClickable ? 'surface-interactive cursor-pointer focus-ring' : '',
       ].filter(Boolean).join(' ')}
     >
       {(title || subtitle) && (
@@ -82,7 +82,7 @@ export const DCard: UIComponent = ({ node, onAction }) => {
       )}
 
       {footerNodes && footerNodes.length > 0 && (
-        <footer className="flex items-center gap-2 mt-3 pt-3 border-t border-hair">
+        <footer className="flex items-center gap-2 mt-3 pt-3 border-t divide-hairline">
           {renderChildren(footerNodes, onAction)}
         </footer>
       )}

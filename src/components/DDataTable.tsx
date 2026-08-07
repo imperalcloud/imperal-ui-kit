@@ -119,12 +119,12 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
 
   return (
     <div
-      className="overflow-auto rounded-lg border border-hair/50"
+      className="surface overflow-auto"
       style={max_height ? { maxHeight: max_height } : undefined}
     >
       <table className="w-full text-sm border-collapse">
         <thead className={sticky_header ? 'sticky top-0 z-10' : ''}>
-          <tr className="bg-card/60 border-b border-hair/50">
+          <tr className="bg-card/60 border-b divide-hairline">
             {columns.map((col) => (
               <th
                 key={col.key}
@@ -172,7 +172,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                 onKeyDown={isClickable ? event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleRowClick(row); } } : undefined}
                 tabIndex={isClickable ? 0 : undefined}
                 className={[
-                  'border-b border-hair/30 last:border-b-0',
+                  'border-b divide-hairline last:border-b-0',
                   'transition-colors',
                   isClickable
                     ? 'cursor-pointer hover:bg-card'

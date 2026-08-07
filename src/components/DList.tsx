@@ -129,7 +129,7 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
       onDragLeave={item.droppable ? handleDragLeave : undefined}
       onDrop={item.droppable ? handleDrop : undefined}
       className={[
-        'border-b border-hair/50 transition-all relative select-none',
+        'border-b divide-hairline transition-all relative select-none',
         item.selected || isSelected ? 'bg-primary/10 border-l-2 border-l-blue-500' : '',
         dragOver ? 'bg-primary/20 ring-1 ring-focus/50' : '',
         item.draggable ? 'cursor-grab active:cursor-grabbing' : '',
@@ -201,7 +201,7 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
       </div>
 
       {expanded && expandedNodes.length > 0 && (
-        <div className="px-3 py-2 border-t border-hair/30 bg-panel/30">
+        <div className="px-3 py-2 border-t divide-hairline bg-panel/30">
           {renderChildren(expandedNodes, onAction)}
         </div>
       )}
@@ -422,7 +422,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
 
       {/* System paginator — sticky bottom, always visible */}
       {paginated && filtered.length > page_size && (
-        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t border-hair/30 flex-shrink-0">
+        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t divide-hairline flex-shrink-0">
           <Paginator page={currentPage} totalPages={totalPages} totalItems={filtered.length}
             onPageChange={p => setCurrentPage(Math.max(1, Math.min(p, totalPages)))} />
         </div>
@@ -430,7 +430,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
 
       {/* Footer paginator — total items + extra info (for infinite scroll lists) */}
       {!paginated && showFooterPaginator && (
-        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t border-hair/30 flex-shrink-0">
+        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t divide-hairline flex-shrink-0">
           <Paginator
             page={1}
             totalPages={on_end_reached ? 2 : 1}

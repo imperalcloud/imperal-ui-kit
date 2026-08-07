@@ -39,7 +39,7 @@ export const DTabs: UIComponent = ({ node, onAction }) => {
 
   return (
     <div className="flex flex-col gap-0 flex-1 min-h-0">
-      <div role="tablist" className="flex gap-0 border-b border-hair/50 overflow-x-auto flex-shrink-0">
+      <div role="tablist" className="flex gap-0 border-b divide-hairline overflow-x-auto flex-shrink-0">
         {normalizedTabs.map((tab, index) => {
           const isActive = tab.id === active;
           return (

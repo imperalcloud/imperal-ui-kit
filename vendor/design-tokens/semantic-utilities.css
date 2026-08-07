@@ -210,6 +210,60 @@
   .icon-btn-sm { min-width: 2.75rem; min-height: 2.75rem; border-radius: var(--imp-radius-md); }
   .focus-ring:focus-visible { outline: 2px solid var(--imp-color-focus-ring); outline-offset: 2px; }
   .overflow-wrap-anywhere { overflow-wrap: anywhere; }
+
+  /* ═══ Surfaces — the canonical container treatment ════════════════════════
+   * ONE definition of what a "card" looks like: fill + hairline + radius +
+   * elevation + inner sheen. Components use these instead of hand-rolling
+   * `bg-card/40 border border-hair/50 rounded-lg`, which is how the borders
+   * drifted apart (18 border variants, 8 radii) in the first place.
+   *
+   *   .surface        — flat, bordered container (no lift)
+   *   .surface-raised — the default card: subtle lift + top sheen
+   *   .surface-overlay— menus/popovers/dialogs: strongest lift
+   *
+   * Compose with .surface-interactive when the container is clickable. */
+  .surface,
+  .surface-raised,
+  .surface-overlay {
+    background-color: var(--imp-color-surface-2);
+    border: var(--imp-card-border-w) solid var(--imp-card-border-color);
+    border-radius: var(--imp-card-radius);
+    /* Contain children: nothing can paint outside the rounded hairline. */
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .surface          { box-shadow: var(--imp-elevation-0); }
+  .surface-raised   { box-shadow: var(--imp-card-shadow), var(--imp-sheen-top); }
+  .surface-overlay {
+    background-color: var(--imp-color-surface-1);
+    border-radius: var(--imp-radius-xl);
+    box-shadow: var(--imp-elevation-3), var(--imp-sheen-top);
+  }
+
+  /* Interactive containers: the border is what responds, not the fill —
+   * that keeps hover calm instead of flashing a whole panel. */
+  .surface-interactive {
+    transition:
+      border-color var(--imp-duration-normal) var(--imp-ease-out),
+      box-shadow   var(--imp-duration-normal) var(--imp-ease-out),
+      transform    var(--imp-duration-normal) var(--imp-ease-out);
+  }
+  .surface-interactive:hover {
+    border-color: var(--imp-card-border-color-hover);
+    box-shadow: var(--imp-card-shadow-hover), var(--imp-sheen-top);
+  }
+  .surface-interactive:focus-visible {
+    outline: var(--imp-focus-ring-width) solid var(--imp-color-focus-ring);
+    outline-offset: var(--imp-focus-ring-offset);
+  }
+
+  /* Hairline divider that matches the container border exactly. */
+  .divide-hairline { border-color: var(--imp-card-border-color); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .surface-interactive { transition: none; }
+  }
 }
 
 @media (pointer: fine) {

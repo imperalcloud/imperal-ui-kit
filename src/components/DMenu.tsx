@@ -128,7 +128,7 @@ export const DMenu: UIComponent = ({ node, onAction }) => {
           tabIndex={-1}
           aria-label={label}
           onKeyDown={onMenuKeyDown}
-          className={`absolute z-50 mt-1 min-w-48 max-w-[min(22rem,calc(100vw-2rem))] rounded-md border border-default bg-panel py-1 shadow-lg ${align === 'start' ? 'left-0' : 'right-0'}`}
+          className={`surface-overlay absolute z-50 mt-1 min-w-48 max-w-[min(22rem,calc(100vw-2rem))] py-1 ${align === 'start' ? 'left-0' : 'right-0'}`}
         >
           {items.map((item, index) => {
             const key = item.id ?? `${item.label ?? 'separator'}-${index}`;

@@ -63,8 +63,9 @@ describe('data components', () => {
     } }} />);
     const card = container.querySelector('.overflow-hidden') as HTMLElement;
     expect(card).toBeTruthy();
-    expect(card.className).toContain('min-w-0');
-    expect(card.className).toContain('max-w-full');
+    // Containment now comes from the .surface-* contract (min-width:0 / max-width:100%)
+    // rather than per-component classes, plus overflow clipping on the card itself.
+    expect(card.className).toContain('surface-raised');
     expect(screen.getByText('Warning status that must stay contained').className).toContain('break-words');
     expect(screen.getByText('12345678901234567890').className).toContain('break-words');
     expect(screen.getByText('ExtremelyLongTrendWithoutSpaces').parentElement?.className).toContain('flex-wrap');

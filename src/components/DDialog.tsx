@@ -21,7 +21,7 @@ export const DDialog: UIComponent = ({ node, onAction }) => {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[var(--imp-z-modal)] flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4" onPointerDown={event => { if (event.target === event.currentTarget) close(); }}>
-      <div ref={panelRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={title ? titleId : undefined} aria-label={title || 'Dialog'} className="flex max-h-[min(90dvh,52rem)] w-full max-w-[min(100vw,32rem)] flex-col overflow-hidden rounded-t-xl border border-hair bg-panel shadow-xl sm:rounded-xl">
+      <div ref={panelRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={title ? titleId : undefined} aria-label={title || 'Dialog'} className="surface-overlay flex max-h-[min(90dvh,52rem)] w-full max-w-[min(100vw,32rem)] flex-col overflow-hidden rounded-b-none sm:rounded-b-xl">
         <div className="flex min-h-12 items-center justify-between gap-3 border-b border-hair px-4 py-3">
           <h3 id={titleId} className="min-w-0 truncate text-sm font-semibold text-body">{title}</h3>
           <button type="button" aria-label={ui.messages.close} onClick={close} className="icon-btn-sm grid shrink-0 place-items-center text-muted hover:bg-raised focus-ring"><X aria-hidden="true" className="h-4 w-4" /></button>

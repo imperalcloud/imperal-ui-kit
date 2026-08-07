@@ -26,7 +26,7 @@ export const DChart: UIComponent = ({ node }) => {
   const resolvedSeries = series.length ? series : data.length ? Object.keys(data[0]).filter(key => key !== x_key).map((key, index) => ({ key, label: key, color: PALETTE[index % PALETTE.length] })) : [];
   const safeHeight = typeof height === 'number' ? `clamp(12rem, ${Math.max(20, Math.min(70, height / 5))}vw, ${Math.max(12, height / 16)}rem)` : height;
 
-  if (!data.length) return <div role="status" className="flex min-h-48 items-center justify-center rounded-lg border border-hair bg-card/40 text-sm text-muted">{ui.messages.noData}</div>;
+  if (!data.length) return <div role="status" className="surface flex min-h-48 items-center justify-center text-sm text-muted">{ui.messages.noData}</div>;
   const chartProps = { data, margin: { top: 4, right: 8, left: -16, bottom: 0 } };
   const dataTable = (
     <div className={show_data_table ? 'mt-3 overflow-x-auto' : 'sr-only'}>

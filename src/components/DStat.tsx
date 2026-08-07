@@ -42,7 +42,7 @@ export const DStat: UIComponent = ({ node }) => {
   const IconComponent = icon ? (icons[icon as keyof typeof icons] ?? null) : null;
 
   return (
-    <div className="min-w-0 max-w-full overflow-hidden bg-card/40 border border-hair/50 rounded-lg p-4 flex flex-col gap-2">
+    <div className="surface-raised overflow-hidden p-4 flex flex-col gap-2">
       {/* Label row */}
       <div className="flex min-w-0 items-start justify-between gap-2">
         <span className="min-w-0 max-w-full break-words text-xs font-medium leading-snug text-muted uppercase tracking-wide">
