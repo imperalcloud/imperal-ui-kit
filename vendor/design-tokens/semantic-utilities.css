@@ -282,3 +282,36 @@
     .button-base[data-size="sm"], .icon-btn-sm { min-height: 2rem; min-width: 2rem; }
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * INK SAFETY NET for the Tailwind legacy bridge.
+ *
+ * The bridge maps ONE variable per grey shade (--color-gray-800 etc), shared
+ * by `bg-*` and `text-*`. The dark shades point at SURFACE tokens, which is
+ * right for a background and catastrophic for ink: `text-gray-900` painted
+ * white-on-white in day theme, so the label vanished. A variable cannot tell
+ * the two apart — only a utility can, so the ink side is pinned here.
+ *
+ * Same shade, correct role: dark greys read as progressively quieter INK,
+ * and they flip with the theme like every other token.
+ * ═══════════════════════════════════════════════════════════════════════ */
+/* NOT inside @layer utilities: Tailwind treats that layer as its own and
+ * tree-shakes any class it cannot find in the scanned markup, which silently
+ * dropped this net from the built stylesheet. A plain top-level rule always
+ * ships, and still loses to a real utility thanks to layer ordering. */
+/* `:root` adds specificity (0,1,1 vs Tailwind's 0,1,0) so this wins no matter
+ * where Tailwind emits its generated utility in the cascade. */
+:root .text-gray-950, :root .text-zinc-950,
+:root .text-neutral-950, :root .text-slate-950,
+:root .text-gray-900, :root .text-zinc-900,
+:root .text-neutral-900, :root .text-slate-900 {
+  color: var(--imp-color-text);
+}
+:root .text-gray-800, :root .text-zinc-800,
+:root .text-neutral-800, :root .text-slate-800 {
+  color: var(--imp-color-text-muted);
+}
+:root .text-gray-700, :root .text-zinc-700,
+:root .text-neutral-700, :root .text-slate-700 {
+  color: var(--imp-color-text-subtle);
+}

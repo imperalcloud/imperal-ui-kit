@@ -87,6 +87,50 @@ describe('theme scoping', () => {
   });
 });
 
+describe('light theme legibility', () => {
+  const dist = resolve(here, '../../dist/styles.css');
+  const built = existsSync(dist);
+
+  const lum = (hex: string) => {
+    const h = hex.replace('#', '');
+    const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    const n = parseInt(full, 16);
+    return [16, 8, 0]
+      .map((shift) => ((n >> shift) & 255) / 255)
+      .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+      .reduce((acc, v, i) => acc + [0.2126, 0.7152, 0.0722][i] * v, 0);
+  };
+
+  // Regression: hover/selected chips map to --imp-color-surface-2 (the Tailwind
+  // bridge sends `hover:bg-gray-800` there). In the light theme surface-2 was
+  // pure #ffffff, so hovering a menu link painted white on a near-white page and
+  // the label disappeared. In LIGHT the ramp must DESCEND away from the page.
+  it.skipIf(!built)('keeps the light hover surface darker than the page', () => {
+    const css = readFileSync(dist, 'utf8');
+    const light = css.match(/:root\[data-theme=["']?light["']?\]\s*\{([^}]*)\}/);
+    expect(light).toBeTruthy();
+    const body = light![1];
+    const read = (name: string) => body.match(new RegExp(`--imp-color-${name}:\\s*([^;]+);`))?.[1].trim() ?? '';
+
+    const page = read('surface-0');
+    const hover = read('surface-2');
+    expect(page).toMatch(/^#/);
+    expect(hover).toMatch(/^#/);
+    // The hover chip must be a DARKER step, never white-on-white.
+    expect(lum(hover)).toBeLessThan(lum(page));
+    expect(hover.toLowerCase()).not.toBe('#ffffff');
+  });
+
+  // Regression: the bridge maps one variable per grey shade, shared by bg-* and
+  // text-*. The dark shades point at SURFACE tokens, so `text-gray-900` rendered
+  // as a background colour — white ink on a white page. Utilities pin the ink.
+  it.skipIf(!built)('pins dark grey text utilities to ink tokens', () => {
+    const css = readFileSync(dist, 'utf8');
+    expect(css).toMatch(/\.text-gray-900[^{]*\{[^}]*var\(--imp-color-text\)/);
+    expect(css).toMatch(/\.text-gray-700[^{]*\{[^}]*var\(--imp-color-text-subtle\)/);
+  });
+});
+
 describe('surface system', () => {
   it('renders stat cards through the canonical raised surface', () => {
     const { container } = render(<DeclarativeRenderer node={node('Stat', { label: 'Monitors', value: 2 })} />);
