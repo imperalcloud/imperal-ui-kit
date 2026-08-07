@@ -35,6 +35,24 @@ describe('data components', () => {
     expect(thumb.className).toContain('translate-x-[1.375rem]');
   });
 
+  it('treats the requested stats columns as a responsive maximum', () => {
+    const { container } = render(<DeclarativeRenderer node={{ type: 'Stats', props: {
+      columns: 4,
+      children: [
+        { type: 'Stat', props: { label: 'Monitors', value: 2 } },
+        { type: 'Stat', props: { label: 'OK', value: 1 } },
+        { type: 'Stat', props: { label: 'Warning', value: 0 } },
+        { type: 'Stat', props: { label: 'Critical', value: 1 } },
+      ],
+    } }} />);
+    const grid = container.querySelector('.grid') as HTMLElement;
+    expect(grid.className).toContain('min-w-0');
+    expect(grid.className).toContain('max-w-full');
+    expect(grid.style.gridTemplateColumns).toContain('repeat(auto-fit');
+    expect(grid.style.gridTemplateColumns).toContain('max(8rem');
+    expect(grid.style.gridTemplateColumns).toContain('/ 4');
+  });
+
   it('contains stat content when its grid column becomes narrow', () => {
     const { container } = render(<DeclarativeRenderer node={{ type: 'Stat', props: {
       label: 'Warning status that must stay contained',
