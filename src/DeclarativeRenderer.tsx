@@ -61,7 +61,7 @@ class NodeErrorBoundary extends React.Component<BoundaryProps, BoundaryState> {
 
 interface DeclarativeRendererProps {
   node: UINode | null | undefined;
-  onAction?: (action: UIAction) => void;
+  onAction?: import('./types').ActionHandler;
   onConfirm?: OnConfirmFn;
 }
 
@@ -111,7 +111,7 @@ function normalizeChildren(children: UINode | UINode[] | undefined | null): UINo
 
 export function renderChildren(
   children: UINode | UINode[] | undefined | null,
-  onAction?: (action: UIAction) => void
+  onAction?: import('./types').ActionHandler
 ): React.ReactNode {
   const arr = normalizeChildren(children);
   if (arr.length === 0) return null;

@@ -20,6 +20,8 @@ export { DStat } from './components/DStat';
 export { DList } from './components/DList';
 export { DButton } from './components/DButton';
 export { DIcon } from './components/DIcon';
+export { DAppIcon, configureAppIconRenderer } from './components/DAppIcon';
+export type { AppIconRenderer, AppIconRenderProps } from './components/DAppIcon';
 export { DCard } from './components/DCard';
 export { DAlert } from './components/DAlert';
 export { DProgress } from './components/DProgress';

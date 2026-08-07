@@ -61,7 +61,7 @@ export const Stack: UIComponent = ({ node, onAction }) => {
   const classes = [
     'flex min-w-0',
     isHorizontal ? 'flex-row items-center' : 'flex-col flex-1 min-h-0',
-    GAP_MAP[String(gap)] ?? `gap-${gap}`,
+    GAP_MAP[String(gap)] ?? GAP_MAP['3'],
     align ? (ALIGN_MAP[align] ?? '') : '',
     justify ? (JUSTIFY_MAP[justify] ?? '') : '',
     shouldWrap ? 'flex-wrap' : '',

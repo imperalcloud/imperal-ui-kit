@@ -33,7 +33,9 @@ export const DProgress: UIComponent = ({ node }) => {
     size?: 'sm' | 'md' | 'lg';
   };
 
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const safeMax = Number.isFinite(max) && max > 0 ? max : 100;
+  const safeValue = Number.isFinite(value) ? value : 0;
+  const pct = Math.min(100, Math.max(0, (safeValue / safeMax) * 100));
   const barColor = BAR_COLOR_CLASSES[color] ?? BAR_COLOR_CLASSES.blue;
 
   if (variant === 'circular') {
@@ -52,7 +54,7 @@ export const DProgress: UIComponent = ({ node }) => {
           )}
         </div>
       )}
-      <div className={`w-full bg-gray-800/60 rounded-full overflow-hidden ${heightClass}`}>
+      <div role="progressbar" aria-label={label || 'Progress'} aria-valuemin={0} aria-valuemax={safeMax} aria-valuenow={Math.min(safeMax, Math.max(0, safeValue))} className={`w-full bg-gray-800/60 rounded-full overflow-hidden ${heightClass}`}>
         <div
           className={`${heightClass} ${barColor} rounded-full transition-all duration-500`}
           style={{ width: `${pct}%` }}
@@ -92,7 +94,7 @@ function CircularProgress({ value, color, label, show_value, size = 'md' }: Circ
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="relative" style={{ width: diameter, height: diameter }}>
+      <div role="progressbar" aria-label={label || 'Progress'} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value)} className="relative" style={{ width: diameter, height: diameter }}>
         <svg width={diameter} height={diameter} className="-rotate-90">
           <circle
             cx={diameter / 2}

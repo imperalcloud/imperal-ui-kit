@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useEffect, useId, useState, useRef } from 'react';
 import { Send } from 'lucide-react';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
@@ -27,6 +27,11 @@ export const DInput: UIComponent = ({ node, onAction }) => {
 
   const [localValue, setLocalValue] = useState(String(initValue));
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
+
+  useEffect(() => {
+    if (form && form.values[param_name] === undefined) form.setField(param_name, initValue);
+  }, [form, initValue, param_name]);
 
   const value = form ? (form.values[param_name] ?? initValue) : localValue;
 
@@ -55,10 +60,11 @@ export const DInput: UIComponent = ({ node, onAction }) => {
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      {label && <label className="text-xs text-gray-400">{label}</label>}
+      {label && <label htmlFor={inputId} className="text-xs text-gray-400">{label}</label>}
       <div className="flex items-center gap-1.5 min-w-0">
         <input
           ref={inputRef}
+          id={inputId}
           type={type}
           autoComplete={type === 'password' ? 'new-password' : undefined}
           spellCheck={type === 'password' ? false : undefined}
@@ -77,10 +83,12 @@ export const DInput: UIComponent = ({ node, onAction }) => {
         />
         {!form && String(value).trim() && (
           <button
+            type="button"
+            aria-label="Submit input"
             onClick={handleSubmit}
             className="flex-shrink-0 p-1.5 rounded-md text-blue-400 hover:bg-blue-500/20 transition-colors"
           >
-            <Send size={14} />
+            <Send size={14} aria-hidden="true" />
           </button>
         )}
       </div>

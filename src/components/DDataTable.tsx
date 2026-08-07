@@ -49,8 +49,11 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
   }, [editing]);
 
   const sorted = useMemo(() => {
-    if (!sort.key || !sort.dir) return rows;
-    return [...rows].sort((a, b) => {
+    const indexed = rows.map((row, sourceIndex) => ({ row, sourceIndex }));
+    if (!sort.key || !sort.dir) return indexed;
+    return indexed.sort((aEntry, bEntry) => {
+      const a = aEntry.row;
+      const b = bEntry.row;
       const av = a[sort.key];
       const bv = b[sort.key];
       const aStr = String(av ?? '');
@@ -125,7 +128,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
             {columns.map((col) => (
               <th
                 key={col.key}
-                onClick={() => handleSort(col)}
+                aria-sort={sort.key === col.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
                 style={col.width ? { width: col.width } : undefined}
                 className={[
                   'px-3 py-2.5 text-left text-xs font-medium text-gray-400 uppercase tracking-wide',
@@ -133,7 +136,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                   col.sortable ? 'cursor-pointer hover:text-gray-200 transition-colors' : '',
                 ].join(' ')}
               >
-                <span className="flex items-center gap-1">
+                <button type="button" disabled={!col.sortable} onClick={() => handleSort(col)} className="flex items-center gap-1 disabled:cursor-default">
                   {col.label}
                   {col.sortable && (
                     <span className="flex flex-col">
@@ -146,7 +149,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                       )}
                     </span>
                   )}
-                </span>
+                </button>
               </th>
             ))}
           </tr>
@@ -162,10 +165,12 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
               </td>
             </tr>
           ) : (
-            sorted.map((row, rowIdx) => (
+            sorted.map(({ row, sourceIndex }) => (
               <tr
-                key={rowIdx}
+                key={String(row.id ?? sourceIndex)}
                 onClick={isClickable ? () => handleRowClick(row) : undefined}
+                onKeyDown={isClickable ? event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleRowClick(row); } } : undefined}
+                tabIndex={isClickable ? 0 : undefined}
                 className={[
                   'border-b border-gray-800/30 last:border-b-0',
                   'transition-colors',
@@ -176,7 +181,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
               >
                 {columns.map((col) => {
                   const isEditing =
-                    editing?.rowIdx === rowIdx && editing?.colKey === col.key;
+                    editing?.rowIdx === sourceIndex && editing?.colKey === col.key;
 
                   // toggle edit_type
                   if (col.editable && col.edit_type === 'toggle') {
@@ -189,6 +194,8 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                       >
                         <button
                           type="button"
+                          role="switch"
+                          aria-label={`Toggle ${col.label}`}
                           aria-checked={boolVal}
                           className={[
                             'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
@@ -234,7 +241,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                       <td
                         key={col.key}
                         className="px-3 py-2.5 text-gray-300 text-sm cursor-text hover:bg-gray-700/40 group"
-                        onClick={(e) => { e.stopPropagation(); startEdit(rowIdx, col, row); }}
+                        onClick={(e) => { e.stopPropagation(); startEdit(sourceIndex, col, row); }}
                       >
                         <span className="flex items-center gap-1">
                           {String(row[col.key] ?? '')}

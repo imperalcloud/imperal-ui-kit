@@ -14,9 +14,11 @@ export interface UIAction {
   url?: string;
 }
 
+export type ActionHandler = (action: UIAction) => void | Promise<void>;
+
 export type UIComponent = React.FC<{
   node: UINode;
-  onAction?: (action: UIAction) => void;
+  onAction?: ActionHandler;
 }>;
 
 // Common prop shapes shared across components

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useId, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
@@ -29,6 +29,7 @@ export const DSelect: UIComponent = ({ node, onAction }) => {
   };
 
   const [localValue, setLocalValue] = useState(initValue);
+  const selectId = useId();
   // GAP-2: register initial value with the form so selects that user doesn't
   // touch still appear in submit payload.
   React.useEffect(() => {
@@ -37,7 +38,7 @@ export const DSelect: UIComponent = ({ node, onAction }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const currentValue = form ? (form.values[param_name] ?? initValue) : localValue;
+  const currentValue = String(form ? (form.values[param_name] ?? initValue) : localValue);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value;
@@ -53,9 +54,10 @@ export const DSelect: UIComponent = ({ node, onAction }) => {
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      {label && <label className="text-xs text-gray-400">{label}</label>}
+      {label && <label htmlFor={selectId} className="text-xs text-gray-400">{label}</label>}
       <div className="relative min-w-0">
         <select
+          id={selectId}
           value={currentValue}
           onChange={handleChange}
           className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm text-white appearance-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -71,7 +73,7 @@ export const DSelect: UIComponent = ({ node, onAction }) => {
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
+        <ChevronDown aria-hidden="true" className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
       </div>
     </div>
   );

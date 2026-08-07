@@ -43,6 +43,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
   } = node.props as DTagInputProps;
 
   const [validateError, setValidateError] = useState(false);
+  const validationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validateRe = useMemo(() => {
     if (!validate) return null;
     try { return new RegExp(validate); } catch { return null; }
@@ -54,6 +55,10 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (form && form.values[param_name] === undefined) form.setField(param_name, initValues);
+  }, [form, initValues, param_name]);
 
   const rawSelected = form ? (form.values[param_name] ?? initValues) : localValues;
   const selected: string[] = Array.isArray(rawSelected) ? rawSelected : rawSelected ? [String(rawSelected)] : [];
@@ -74,8 +79,8 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
     if (!trimmed || selected.includes(trimmed)) return;
     if (validateRe && !validateRe.test(trimmed)) {
       setValidateError(true);
-      // Auto-clear highlight after a short window so the user can try again
-      setTimeout(() => setValidateError(false), 1800);
+      if (validationTimer.current) clearTimeout(validationTimer.current);
+      validationTimer.current = setTimeout(() => setValidateError(false), 1800);
       return;
     }
     setValidateError(false);
@@ -110,7 +115,17 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
     const parts = text.split(re).map(s => s.trim()).filter(Boolean);
     if (parts.length < 2) return; // let default single-paste behavior run
     e.preventDefault();
-    parts.forEach(addTag);
+    const additions = parts.filter((part, index) =>
+      !selected.includes(part) && parts.indexOf(part) === index && (!validateRe || validateRe.test(part)),
+    );
+    if (additions.length) applyChange([...selected, ...additions]);
+    if (additions.length !== parts.length) {
+      setValidateError(true);
+      if (validationTimer.current) clearTimeout(validationTimer.current);
+      validationTimer.current = setTimeout(() => setValidateError(false), 1800);
+    }
+    setInputValue('');
+    setIsOpen(false);
   };
 
   // Close dropdown when clicking outside
@@ -122,6 +137,10 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  useEffect(() => () => {
+    if (validationTimer.current) clearTimeout(validationTimer.current);
   }, []);
 
   const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
@@ -156,6 +175,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
         ))}
         <input
           ref={inputRef}
+          aria-label="Tags"
           value={inputValue}
           onChange={e => { setInputValue(e.target.value); setIsOpen(true); }}
           onFocus={() => setIsOpen(true)}

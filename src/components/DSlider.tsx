@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import type { UIComponent } from '../types';
 import { FormContext } from './DForm';
 
@@ -23,7 +23,12 @@ export const DSlider: UIComponent = ({ node, onAction }) => {
   };
 
   const [localValue, setLocalValue] = useState(initValue);
-  const current = form ? (form.values[param_name] ?? initValue) : localValue;
+  useEffect(() => {
+    if (form && form.values[param_name] === undefined) form.setField(param_name, initValue);
+  }, [form, initValue, param_name]);
+
+  const rawCurrent = form ? (form.values[param_name] ?? initValue) : localValue;
+  const current = typeof rawCurrent === 'number' ? rawCurrent : Number(rawCurrent) || min;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseFloat(e.target.value);

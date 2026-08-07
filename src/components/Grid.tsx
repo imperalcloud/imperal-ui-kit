@@ -40,8 +40,8 @@ export const Grid: UIComponent = ({ node, onAction }) => {
   const colKey = String(columns);
   const gapKey = String(gap);
 
-  const colClass = COL_MAP[colKey] ?? `grid-cols-${colKey}`;
-  const gapClass = GAP_MAP[gapKey] ?? `gap-${gapKey}`;
+  const colClass = COL_MAP[colKey] ?? COL_MAP['2'];
+  const gapClass = GAP_MAP[gapKey] ?? GAP_MAP['3'];
 
   return (
     <div className={`grid ${colClass} ${gapClass} ${extraClass ?? ''}`}>
