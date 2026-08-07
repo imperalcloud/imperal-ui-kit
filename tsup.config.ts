@@ -21,7 +21,6 @@ export default defineConfig({
     'react-syntax-highlighter/dist/cjs/prism',
     'react-syntax-highlighter/dist/cjs/styles/prism/one-dark',
     'dompurify',
-    'isomorphic-dompurify',
     'lucide-react',
     'tailwind-merge',
   ],
