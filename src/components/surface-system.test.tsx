@@ -17,6 +17,29 @@ const node = (type: string, props: Record<string, unknown>) => ({ type, props })
  * component starts hand-rolling `bg-card/40 border border-hair/50 rounded-lg`
  * again, which is how the kit drifted to 18 border colours and 8 radii.
  */
+describe('theme scoping', () => {
+  // Regression: postcss-prefixwrap used to rewrite `:root[data-theme="light"]`
+  // into `.imperal-ui[data-theme="light"]`, which matches nothing (the attribute
+  // lives on <html>). The scoped `.imperal-ui:not([data-theme])` copy then won
+  // by inheritance and light mode rendered dark cards on a light page.
+  const dist = resolve(here, '../../dist/styles.css');
+
+  it('keeps theme palettes on global :root selectors', () => {
+    const css = readFileSync(dist, 'utf8');
+    expect(css).toMatch(/:root\[data-theme=["']?light["']?\]/);
+    expect(css).not.toMatch(/\.imperal-ui\[data-theme/);
+    expect(css).not.toMatch(/\.imperal-ui:not\(\[data-theme\]\)/);
+  });
+
+  it('defines a distinct card palette for each theme', () => {
+    const css = readFileSync(dist, 'utf8');
+    const values = [...css.matchAll(/--imp-color-surface-card:\s*([^;]+);/g)].map((m) => m[1].trim().toLowerCase());
+    // At least one light (#ffffff) and one dark (#141415) declaration.
+    expect(values.some((v) => v === '#ffffff' || v === '#fff')).toBe(true);
+    expect(values.some((v) => v === '#141415')).toBe(true);
+  });
+});
+
 describe('surface system', () => {
   it('renders stat cards through the canonical raised surface', () => {
     const { container } = render(<DeclarativeRenderer node={node('Stat', { label: 'Monitors', value: 2 })} />);
