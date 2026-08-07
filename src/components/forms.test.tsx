@@ -43,8 +43,15 @@ describe('form controls', () => {
     });
     const control = screen.getByRole('switch', { name: 'Notifications' });
     expect(control.getAttribute('aria-checked')).toBe('false');
+    const thumb = control.firstElementChild as HTMLElement;
+    expect(thumb.className).toContain('left-0');
+    expect(thumb.className).toContain('translate-x-0.5');
+
     fireEvent.click(control);
     expect(control.getAttribute('aria-checked')).toBe('true');
+    expect(control.className).toContain('h-6');
+    expect(control.className).toContain('w-11');
+    expect(thumb.className).toContain('translate-x-[1.375rem]');
     expect(action).toHaveBeenCalledWith(expect.objectContaining({ params: { enabled: true } }));
   });
 });

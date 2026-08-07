@@ -15,7 +15,7 @@ function toBool(v: unknown): boolean {
 
 /**
  * Standard system toggle — matches React SettingsModal Toggle exactly.
- * w-9 h-5 track, w-4 h-4 dot, standard Tailwind classes only (no arbitrary values).
+ * 44×24 px track and 20 px thumb provide a clear state and a touch-safe target.
  */
 export const DToggle: UIComponent = ({ node, onAction }) => {
   const form = useContext(FormContext);
@@ -64,14 +64,14 @@ export const DToggle: UIComponent = ({ node, onAction }) => {
         role="switch"
         aria-checked={checked}
         aria-label={label || param_name}
-        className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-focus/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-focus/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
           checked ? 'bg-primary' : 'bg-raised'
         }`}
       >
         <span
           aria-hidden="true"
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
-            checked ? 'translate-x-4' : 'translate-x-0.5'
+          className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+            checked ? 'translate-x-[1.375rem]' : 'translate-x-0.5'
           }`}
         />
       </button>

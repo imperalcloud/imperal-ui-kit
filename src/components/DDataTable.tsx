@@ -198,14 +198,14 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                           aria-label={`Toggle ${col.label}`}
                           aria-checked={boolVal}
                           className={[
-                            'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
+                            'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-focus/70',
                             boolVal ? 'bg-primary' : 'bg-raised',
                           ].join(' ')}
                         >
                           <span
                             className={[
-                              'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform',
-                              boolVal ? 'translate-x-4' : 'translate-x-1',
+                              'absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
+                              boolVal ? 'translate-x-[1.375rem]' : 'translate-x-0.5',
                             ].join(' ')}
                           />
                         </button>

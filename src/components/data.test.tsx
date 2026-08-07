@@ -22,6 +22,19 @@ describe('data components', () => {
     expect(onAction).toHaveBeenCalledWith({ action: 'call', function: 'open' });
   });
 
+  it('keeps editable boolean cells inside a touch-safe switch track', () => {
+    render(<DeclarativeRenderer node={{ type: 'DataTable', props: {
+      columns: [{ key: 'active', label: 'Active', editable: true, edit_type: 'toggle' }],
+      rows: [{ id: '1', active: true }],
+    } }} />);
+    const control = screen.getByRole('switch', { name: 'Toggle Active' });
+    const thumb = control.firstElementChild as HTMLElement;
+    expect(control.className).toContain('h-6');
+    expect(control.className).toContain('w-11');
+    expect(thumb.className).toContain('left-0');
+    expect(thumb.className).toContain('translate-x-[1.375rem]');
+  });
+
   it('sorts data table while preserving the edited source row identity', () => {
     const onAction = vi.fn();
     render(<DeclarativeRenderer onAction={onAction} node={{ type: 'DataTable', props: {
