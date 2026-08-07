@@ -29,4 +29,13 @@ const out = postcss([
   }),
 ]).process(css, { from: undefined });
 fs.writeFileSync(f, out.css);
-console.log("scoped dist/styles.css under .imperal-ui");
+
+// Build gate: a scoped theme selector can never match (the attribute lives on
+// <html>), which silently kills the light palette. Fail the build, not prod.
+if (/\.imperal-ui\[data-theme/.test(out.css) || /\.imperal-ui:not\(\[data-theme\]\)/.test(out.css)) {
+  throw new Error("theme selectors were scoped under .imperal-ui; they must stay global");
+}
+if (!/:root\[data-theme=["']?light["']?\]/.test(out.css)) {
+  throw new Error("light theme palette missing from built CSS");
+}
+console.log("scoped dist/styles.css under .imperal-ui (theme selectors kept global)");
