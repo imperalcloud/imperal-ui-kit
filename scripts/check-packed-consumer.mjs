@@ -23,6 +23,7 @@ writeFileSync(join(work, 'package.json'), JSON.stringify({
     'react-dom': '19.2.0',
     typescript: 'latest',
     vite: 'latest',
+    next: 'latest',
   },
 }, null, 2));
 writeFileSync(join(work, 'index.html'), '<div id="root"></div><script type="module" src="/src.tsx"></script>\n');
@@ -58,6 +59,7 @@ writeFileSync(join(work, 'tsconfig.json'), JSON.stringify({
 
 execFileSync('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: work, stdio: 'inherit' });
 execFileSync('npm', ['run', 'check'], { cwd: work, stdio: 'inherit' });
+execFileSync('node', ['--input-type=module', '--eval', "await import('@imperal/ui-kit'); await import('@imperal/ui-kit/provider'); await import('@imperal/ui-kit/lazy'); console.log('runtime exports resolve')"], { cwd: work, stdio: 'inherit' });
 const assets = join(work, 'dist', 'assets');
 const jsSizes = readdirSync(assets).filter(name => name.endsWith('.js')).map(name => ({ name, size: statSync(join(assets, name)).size }));
 const lazyEntry = jsSizes.find(asset => asset.name.startsWith('lazy-'));
