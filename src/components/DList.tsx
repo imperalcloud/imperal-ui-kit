@@ -44,14 +44,18 @@ interface DListItemProps {
 function SelectCheckbox({ checked, onChange, className = '' }:
   { checked: boolean; onChange: () => void; className?: string }) {
   return (
-    <div
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label={checked ? 'Deselect item' : 'Select item'}
       onClick={e => { e.stopPropagation(); onChange(); }}
-      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 ${
+      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500/70 ${
         checked ? 'bg-blue-500 border-blue-500' : 'border-gray-600 hover:border-gray-400'
       } ${className}`}
     >
-      {checked && <Check size={10} className="text-white" strokeWidth={3} />}
-    </div>
+      {checked && <Check aria-hidden="true" size={10} className="text-white" strokeWidth={3} />}
+    </button>
   );
 }
 
@@ -133,6 +137,12 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
     >
       <div
         onClick={isClickable ? handleClick : undefined}
+        onKeyDown={isClickable ? event => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleClick(); }
+        } : undefined}
+        role={isClickable ? 'button' : undefined}
+        tabIndex={isClickable ? 0 : undefined}
+        aria-expanded={isExpandable ? expanded : undefined}
         className={[
           'group row-pad',
           isClickable ? 'cursor-pointer hover:bg-gray-800/60' : '',
@@ -252,6 +262,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
     bulk_actions: rawBulkActions,
     total_items = 0,
     extra_info = '',
+    grouped_by = '',
   } = node.props as {
     items?: any[];
     searchable?: boolean;
@@ -265,6 +276,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
     bulk_actions?: BulkActionDef[];
     total_items?: number;
     extra_info?: string;
+    grouped_by?: string;
   };
 
   const items = useMemo(() =>
@@ -279,13 +291,14 @@ export const DList: UIComponent = ({ node, onAction }) => {
   useEffect(() => { setSelectedIds(new Set()); }, [rawItems]);
 
   const filtered = useMemo(() => {
-    setCurrentPage(1);
     if (!query.trim()) return items;
     const q = query.toLowerCase();
     return items.filter((i: any) =>
       i.title?.toLowerCase().includes(q) || i.subtitle?.toLowerCase().includes(q) || i.meta?.toLowerCase().includes(q)
     );
   }, [items, query]);
+
+  useEffect(() => { setCurrentPage(1); }, [query]);
 
   const paginated = page_size > 0;
   const totalPages = paginated ? Math.max(1, Math.ceil(filtered.length / page_size)) : 1;
@@ -384,17 +397,24 @@ export const DList: UIComponent = ({ node, onAction }) => {
         {displayItems.length === 0 ? (
           <div className="text-center py-6 text-xs text-gray-600">{empty_text}</div>
         ) : (
-          displayItems.map((item: any) => (
-            <DListItem
-              key={item.id}
-              item={item}
-              onAction={onAction}
-              selectable={selectable}
-              isSelected={selectedIds.has(item.id)}
-              hasSelection={hasSelection}
-              onToggleSelect={selectable ? toggleSelect : undefined}
-            />
-          ))
+          displayItems.map((item: any, index: number) => {
+            const previous = displayItems[index - 1];
+            const group = grouped_by ? String(item[grouped_by] ?? '') : '';
+            const showGroup = grouped_by && (!previous || String(previous[grouped_by] ?? '') !== group);
+            return (
+              <React.Fragment key={item.id ?? index}>
+                {showGroup && <div className="px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-gray-500 bg-gray-900/60">{group || 'Other'}</div>}
+                <DListItem
+                  item={item}
+                  onAction={onAction}
+                  selectable={selectable}
+                  isSelected={selectedIds.has(item.id)}
+                  hasSelection={hasSelection}
+                  onToggleSelect={selectable ? toggleSelect : undefined}
+                />
+              </React.Fragment>
+            );
+          })
         )}
 
         {on_end_reached && <div ref={sentinelRef} className="h-px shrink-0" aria-hidden="true" />}

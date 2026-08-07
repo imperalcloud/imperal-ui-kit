@@ -39,6 +39,7 @@ import { DBulkUpload } from './components/DBulkUpload';
 import { DTextArea } from './components/DTextArea';
 import { DRichEditor } from './components/DRichEditor';
 import { DTagInput } from './components/DTagInput';
+import { DAppIcon } from './components/DAppIcon';
 
 // Display
 import { DHeader } from './components/DHeader';
@@ -82,6 +83,7 @@ export function registerAllComponents(): void {
   registerComponent('badge', DBadge);
   registerComponent('avatar', DAvatar);
   registerComponent('icon', DIcon);
+  registerComponent('appicon', DAppIcon);
   registerComponent('button', DButton);
   registerComponent('alert', DAlert);
 

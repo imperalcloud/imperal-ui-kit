@@ -3,6 +3,8 @@
 import * as LucideIcons from 'lucide-react';
 import type { UIComponent } from '../types';
 
+const COLOR_CLASSES: Record<string, string> = { blue: 'bg-blue-500', green: 'bg-green-500', red: 'bg-red-500', amber: 'bg-amber-500', purple: 'bg-purple-500', gray: 'bg-gray-500' };
+
 export const DTimeline: UIComponent = ({ node }) => {
   const { items: rawItems = [] } = node.props as { items?: any[] };
   const items = Array.isArray(rawItems) ? rawItems : [];
@@ -14,7 +16,7 @@ export const DTimeline: UIComponent = ({ node }) => {
         return (
           <div key={i} className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className={`w-3 h-3 rounded-full mt-1.5 ${item.color ? `bg-${item.color}-500` : 'bg-blue-500'}`}>
+              <div className={`w-3 h-3 rounded-full mt-1.5 ${COLOR_CLASSES[item.color] || 'bg-blue-500'}`}>
                 {IconComp && <IconComp className="w-3 h-3 text-white" />}
               </div>
               {!isLast && <div className="w-px flex-1 bg-gray-700 my-1" />}

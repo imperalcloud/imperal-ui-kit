@@ -27,6 +27,11 @@ export const DCard: UIComponent = ({ node, onAction }) => {
 
   const isClickable = !!on_click;
   const handleClick = () => { if (on_click && onAction) onAction(on_click); };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!isClickable || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    handleClick();
+  };
 
   const normalizeNodes = (val: UINode | UINode[] | undefined): UINode[] | undefined => {
     if (!val) return undefined;
@@ -40,12 +45,15 @@ export const DCard: UIComponent = ({ node, onAction }) => {
 
   return (
     <div
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
       onClick={isClickable ? handleClick : undefined}
+      onKeyDown={isClickable ? handleKeyDown : undefined}
       className={[
         'flex flex-col bg-card/60 card-shape',
         border ? 'border border-hair' : '',
         padding ? 'card-pad' : '',
-        isClickable ? 'cursor-pointer hover:bg-card transition-colors' : '',
+        isClickable ? 'cursor-pointer hover:bg-card transition-colors focus-ring' : '',
       ].filter(Boolean).join(' ')}
     >
       {(title || subtitle) && (

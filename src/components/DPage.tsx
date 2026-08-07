@@ -1,5 +1,5 @@
 'use client';
-import type { UIComponent } from '../types';
+import type { UIComponent, UINode } from '../types';
 import { renderChildren } from '../DeclarativeRenderer';
 
 /**
@@ -16,7 +16,7 @@ export const DPage: UIComponent = ({ node, onAction }) => {
   const { title, subtitle, children } = node.props as {
     title?: string;
     subtitle?: string;
-    children?: any;
+    children?: UINode[];
   };
   return (
     <div className="page-stack">

@@ -9,8 +9,8 @@
 @layer theme, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
-@import "./styles/tokens.css";
-@import "./styles/semantic-utilities.css";
+@import "@imperal/design-tokens/tokens.css";
+@import "@imperal/design-tokens/semantic-utilities.css";
 
 /* The only reset the kit needs: Tailwind utilities assume border-box. This is
  * universal (every modern site already sets it) so it is safe globally. */

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import type { UIComponent } from '../types';
 import { FormContext } from './DForm';
@@ -27,6 +27,10 @@ export const DMultiSelect: UIComponent = ({ node, onAction }) => {
   const options: SelectOption[] = Array.isArray(rawOptions) ? rawOptions : [];
   const initValues: string[] = Array.isArray(rawInitValues) ? rawInitValues : rawInitValues ? [String(rawInitValues)] : [];
   const [localValues, setLocalValues] = useState<string[]>(initValues);
+  useEffect(() => {
+    if (form && form.values[param_name] === undefined) form.setField(param_name, initValues);
+  }, [form, initValues, param_name]);
+
   const rawSelected = form ? (form.values[param_name] ?? initValues) : localValues;
   const selected: string[] = Array.isArray(rawSelected) ? rawSelected : rawSelected ? [String(rawSelected)] : [];
 
@@ -55,7 +59,7 @@ export const DMultiSelect: UIComponent = ({ node, onAction }) => {
                 className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-900/50 text-blue-300 text-xs rounded-full"
               >
                 {opt?.label || v}
-                <button onClick={() => toggle(v)} aria-label={`Remove ${opt?.label || v}`}>
+                <button type="button" onClick={() => toggle(v)} aria-label={`Remove ${opt?.label || v}`}>
                   <X className="w-3 h-3" />
                 </button>
               </span>

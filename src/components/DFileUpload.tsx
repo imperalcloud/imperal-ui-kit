@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Upload, X, FileText, Image as ImageIcon, Film, Music, Archive, File,
   CheckCircle2, XCircle, Loader2,
@@ -120,6 +120,12 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
   const [dragOver, setDragOver] = useState(false);
   const [notice, setNotice] = useState(''); // batch-level message (e.g. "max 5 files")
   const ref = useRef<HTMLInputElement>(null);
+  const previewUrls = useRef(new Set<string>());
+  useEffect(() => () => {
+    previewUrls.current.forEach(url => URL.revokeObjectURL(url));
+    previewUrls.current.clear();
+  }, []);
+
   const compact = variant === 'compact';
   const futuristic = variant === 'futuristic';
 
@@ -138,14 +144,25 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
   const removeRow = useCallback((client_id: string) => {
     setRows(prev => {
       const gone = prev.find(r => r.client_id === client_id);
-      if (gone?.preview) URL.revokeObjectURL(gone.preview);
+      if (gone?.preview) {
+        URL.revokeObjectURL(gone.preview);
+        previewUrls.current.delete(gone.preview);
+      }
       return prev.filter(r => r.client_id !== client_id);
     });
     setNotice('');
   }, []);
 
   const clearAll = useCallback(() => {
-    setRows(prev => { prev.forEach(r => r.preview && URL.revokeObjectURL(r.preview)); return []; });
+    setRows(prev => {
+      prev.forEach(r => {
+        if (r.preview) {
+          URL.revokeObjectURL(r.preview);
+          previewUrls.current.delete(r.preview);
+        }
+      });
+      return [];
+    });
     setNotice('');
   }, []);
 
@@ -185,6 +202,7 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
       totalBytes += file.size;
       const preview = show_previews && file.type.startsWith('image/')
         ? URL.createObjectURL(file) : undefined;
+      if (preview) previewUrls.current.add(preview);
       const row: FileRow = {
         client_id: nextClientId(), name: file.name, size: file.size,
         mime_type: file.type, data_base64: '', status: 'reading', preview,

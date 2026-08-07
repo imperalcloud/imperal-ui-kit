@@ -56,22 +56,25 @@ export const DToggle: UIComponent = ({ node, onAction }) => {
   };
 
   return (
-    <label className="flex items-center gap-2 cursor-pointer select-none py-0.5">
-      <div
+    <div className="flex items-center gap-2 py-0.5">
+      <button
+        type="button"
         onClick={toggle}
         role="switch"
         aria-checked={checked}
-        className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer flex-shrink-0 ${
+        aria-label={label || param_name}
+        className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
           checked ? 'bg-blue-600' : 'bg-gray-700'
         }`}
       >
-        <div
-          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+        <span
+          aria-hidden="true"
+          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
             checked ? 'translate-x-4' : 'translate-x-0.5'
           }`}
         />
-      </div>
+      </button>
       {label && <span className="text-sm text-gray-300">{label}</span>}
-    </label>
+    </div>
   );
 };

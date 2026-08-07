@@ -1,0 +1,26 @@
+{
+  "contractVersion": 1,
+  "sdkVersionTested": "5.9.13",
+  "visualNodeTypes": [
+    "accordion", "alert", "audio", "avatar", "badge", "button", "card",
+    "chart", "code", "datatable", "datepicker", "dialog", "divider", "empty",
+    "error", "fileupload", "form", "graph", "grid", "header", "html", "icon",
+    "image", "input", "keyvalue", "link", "list", "loading", "markdown", "menu",
+    "multiselect", "page", "progress", "richeditor", "section", "select",
+    "slideover", "slider", "stack", "stat", "stats", "tabs", "taginput", "text",
+    "textarea", "timeline", "toggle", "tooltip", "tree", "video"
+  ],
+  "nestedNodeTypes": {
+    "listitem": "Serialized by ui.ListItem and consumed inside the List items prop."
+  },
+  "envelopeNodeTypes": {
+    "trayresponse": "Tray response envelope consumed by the host shell, not the visual renderer."
+  },
+  "rendererExtensions": {
+    "appicon": "Portable host-configurable application icon.",
+    "bulkupload": "Streaming bulk-upload extension.",
+    "column": "Legacy Stack alias.",
+    "data_table": "Legacy DataTable alias.",
+    "row": "Legacy Stack alias."
+  }
+}

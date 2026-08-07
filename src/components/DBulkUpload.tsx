@@ -40,6 +40,7 @@ export const DBulkUpload: UIComponent = ({ node }) => {
 
   const [items, setItems] = useState<Item[]>([]);
   const [running, setRunning] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const idRef = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const dirRef = useRef<HTMLInputElement>(null);
@@ -137,11 +138,20 @@ export const DBulkUpload: UIComponent = ({ node }) => {
   return (
     <div className="space-y-3">
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Add files for bulk upload"
         onClick={() => fileRef.current?.click()}
-        onDragOver={e => { e.preventDefault(); e.currentTarget.classList.add('border-blue-500'); }}
-        onDragLeave={e => e.currentTarget.classList.remove('border-blue-500')}
-        onDrop={e => { e.preventDefault(); e.currentTarget.classList.remove('border-blue-500'); addFiles(e.dataTransfer.files); }}
-        className="border-2 border-dashed border-gray-700 rounded-lg p-5 text-center cursor-pointer hover:border-gray-500 transition-colors"
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            fileRef.current?.click();
+          }
+        }}
+        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
+        className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 ${dragOver ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-500'}`}
       >
         <Upload className="w-7 h-7 text-gray-500 mx-auto mb-1.5" />
         <p className="text-sm text-gray-300">Drop files or click to add — hundreds or thousands at once</p>
@@ -158,25 +168,25 @@ export const DBulkUpload: UIComponent = ({ node }) => {
       )}
 
       <div className="flex flex-wrap gap-2">
-        <button onClick={startAll} disabled={running || (!queued && !failed)}
+        <button type="button" onClick={startAll} disabled={running || (!queued && !failed)}
                 className="px-3 py-1.5 rounded-md text-sm bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white inline-flex items-center gap-1.5">
           {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
           {running ? 'Uploading…' : `Upload ${queued + failed || ''}`.trim()}
         </button>
         {allow_folders && (
-          <button onClick={() => dirRef.current?.click()} disabled={running}
+          <button type="button" onClick={() => dirRef.current?.click()} disabled={running}
                   className="px-3 py-1.5 rounded-md text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 inline-flex items-center gap-1.5">
             <FolderUp className="w-4 h-4" /> Add folder
           </button>
         )}
         {failed > 0 && (
-          <button onClick={retryFailed} disabled={running}
+          <button type="button" onClick={retryFailed} disabled={running}
                   className="px-3 py-1.5 rounded-md text-sm bg-amber-700 hover:bg-amber-600 disabled:opacity-40 text-amber-50 inline-flex items-center gap-1.5">
             <RotateCw className="w-4 h-4" /> Retry {failed}
           </button>
         )}
         {done > 0 && !running && (
-          <button onClick={clearDone}
+          <button type="button" onClick={clearDone}
                   className="px-3 py-1.5 rounded-md text-sm bg-gray-800 hover:bg-gray-700 text-gray-400">
             Clear done
           </button>
@@ -185,8 +195,15 @@ export const DBulkUpload: UIComponent = ({ node }) => {
 
       {total > 0 && (
         <div className="space-y-1.5">
-          <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
-            <div className="h-full bg-green-500 transition-all duration-300" style={{ width: `${pct}%` }} />
+          <div
+            className="h-2 w-full bg-gray-800 rounded-full overflow-hidden"
+            role="progressbar"
+            aria-label="Bulk upload progress"
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-valuenow={done}
+          >
+            <div className="h-full bg-green-500 transition-all duration-300 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
           </div>
           <div className="flex items-center justify-between text-xs text-gray-400">
             <span>{done}/{total} done{uploading ? ` · ${uploading} uploading` : ''}{queued ? ` · ${queued} queued` : ''}</span>
