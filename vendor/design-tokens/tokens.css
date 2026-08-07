@@ -316,10 +316,16 @@
    * a lifted sheet of paper. (Previously the page and the card were both
    * #ffffff — contrast 1.0 — so cards were invisible and everything relied on
    * one washed-out grey line, which is what made light mode feel flat.) */
+  /* Surface ramp. In DARK the ramp climbs (page darkest -> raised lightest),
+   * so `bg-gray-800`/hover states read as "lifted". In LIGHT it must climb the
+   * OTHER way: hover/selected chips have to be DARKER than the page, never
+   * lighter. surface-2 is the hover/selected layer (`hover:bg-gray-800` maps
+   * to it) — pure white here is what made menu hover vanish, taking the label
+   * with it. Keep each step visibly separated from the page. */
   --imp-color-surface-0: #f6f7f9;
-  --imp-color-surface-1: #fbfbfc;
-  --imp-color-surface-2: #ffffff;
-  --imp-color-surface-3: var(--imp-gray-100);
+  --imp-color-surface-1: #ffffff;
+  --imp-color-surface-2: #eceef2;
+  --imp-color-surface-3: #dfe1e7;
 
   /* Warm-neutral ink: near-black for body, genuinely readable secondary. */
   --imp-color-text:            #18181b;
