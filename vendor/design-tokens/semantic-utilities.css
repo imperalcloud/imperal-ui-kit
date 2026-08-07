@@ -173,20 +173,35 @@
   .control-base {
     min-height: 2.75rem;
     width: 100%;
-    border: 1px solid var(--imp-color-border);
+    /* A field is a RECESSED well, not another card: it sits a step darker than
+     * the surface it lives on, with the same hairline as the card edge. */
+    border: var(--imp-input-border-w) solid var(--imp-color-border-input);
     border-radius: var(--imp-radius-md);
-    background: var(--imp-color-surface-1);
+    background: var(--imp-color-surface-input);
     color: var(--imp-color-text);
     padding: .625rem .75rem;
     font-size: .875rem;
     line-height: 1.25rem;
     transition: border-color var(--imp-duration-fast), box-shadow var(--imp-duration-fast), background-color var(--imp-duration-fast);
   }
-  .control-base::placeholder { color: var(--imp-color-text-subtle); }
-  .control-base:hover:not(:disabled) { border-color: var(--imp-color-border-strong); }
+  /* Mid-grey: legible as a hint, unmistakably not a real value. */
+  .control-base::placeholder { color: var(--imp-color-text-placeholder); opacity: 1; }
+  .control-base:hover:not(:disabled) { border-color: var(--imp-color-border-input-hover); }
   .control-base:focus-visible { outline: 2px solid var(--imp-color-focus-ring); outline-offset: 2px; }
   .control-base:disabled { cursor: not-allowed; opacity: .55; }
   .control-error { border-color: var(--imp-color-danger); }
+
+  /* Field chrome WITHOUT geometry — for compact or bespoke controls (toolbar
+   * search boxes, inline table editors, tag-input wells) that need the SAME
+   * recessed fill, hairline and placeholder as .control-base but must keep
+   * their own size. Covers the element itself and any nested bare input. */
+  .field-chrome {
+    background-color: var(--imp-color-surface-input);
+    border-color: var(--imp-color-border-input);
+  }
+  .field-chrome:hover:not(:disabled) { border-color: var(--imp-color-border-input-hover); }
+  .field-chrome::placeholder,
+  .field-chrome ::placeholder { color: var(--imp-color-text-placeholder); opacity: 1; }
 
   .button-base {
     min-height: 2.75rem;

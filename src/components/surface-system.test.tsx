@@ -17,6 +17,50 @@ const node = (type: string, props: Record<string, unknown>) => ({ type, props })
  * component starts hand-rolling `bg-card/40 border border-hair/50 rounded-lg`
  * again, which is how the kit drifted to 18 border colours and 8 radii.
  */
+describe('field system', () => {
+  // Every text-entry control must take its fill, hairline and placeholder from
+  // the input tokens — never hand-rolled (bg-panel / bg-card/60 / bg-raised),
+  // which is what made fields look like five different widgets.
+  it('renders inputs and textareas through the shared control chrome', () => {
+    const { container: input } = render(<DeclarativeRenderer node={node('Input', {
+      placeholder: 'Search', param_name: 'q',
+    })} />);
+    const field = input.querySelector('input') as HTMLInputElement;
+    expect(field.className).toContain('control-base');
+    expect(field.className).not.toMatch(/bg-(panel|card|raised)/);
+
+    const { container: area } = render(<DeclarativeRenderer node={node('TextArea', {
+      placeholder: 'Notes', param_name: 'notes',
+    })} />);
+    const textarea = area.querySelector('textarea') as HTMLTextAreaElement;
+    expect(textarea.className).toContain('control-base');
+    expect(textarea.className).not.toMatch(/bg-(panel|card|raised)/);
+  });
+
+  it('keeps bespoke fields on the shared field chrome', () => {
+    const { container } = render(<DeclarativeRenderer node={node('List', {
+      items: [{ title: 'Alpha' }],
+      searchable: true,
+    })} />);
+    const search = container.querySelector('input[type="text"]') as HTMLInputElement | null;
+    if (search) {
+      expect(search.className).toContain('field-chrome');
+      expect(search.className).not.toMatch(/bg-card\/60|placeholder:text-subtle/);
+    }
+  });
+
+  it.skipIf(!existsSync(resolve(here, '../../dist/styles.css')))(
+    'defines the recessed field palette per theme', () => {
+      const css = readFileSync(resolve(here, '../../dist/styles.css'), 'utf8');
+      // Dark: the exact values the design calls for.
+      expect(css).toMatch(/--imp-color-surface-input:\s*hsl\(240 6% 5%/);
+      expect(css).toMatch(/--imp-color-text-placeholder:\s*hsl\(240 5% 50%/);
+      // The control reads the tokens rather than a literal colour.
+      expect(css).toMatch(/\.control-base\b[^}]*var\(--imp-color-surface-input\)/);
+    },
+  );
+});
+
 describe('theme scoping', () => {
   // Regression: postcss-prefixwrap used to rewrite `:root[data-theme="light"]`
   // into `.imperal-ui[data-theme="light"]`, which matches nothing (the attribute

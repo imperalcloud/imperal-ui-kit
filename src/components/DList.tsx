@@ -367,7 +367,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder={search_placeholder}
-              className="w-full bg-card/60 border border-default/50 rounded-md pl-8 pr-3 py-1.5 text-xs text-body placeholder:text-subtle focus:outline-none focus:border-primary/50 transition-colors" />
+              className="field-chrome w-full border rounded-md pl-8 pr-3 py-1.5 text-xs text-body focus:outline-none focus:border-primary/50 transition-colors" />
           </div>
         </div>
       )}

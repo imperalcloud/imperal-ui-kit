@@ -232,7 +232,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                               if (e.key === 'Enter') commitEdit(row, col, editValue);
                               if (e.key === 'Escape') setEditing(null);
                             }}
-                            className="w-full bg-raised border border-primary rounded px-2 py-1 text-body text-sm focus:outline-none"
+                            className="field-chrome w-full border border-primary rounded px-2 py-1 text-body text-sm focus:outline-none"
                           />
                         </td>
                       );

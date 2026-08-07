@@ -234,6 +234,10 @@
   --imp-input-font-size:  var(--imp-text-sm);
   --imp-input-border-w:   var(--imp-border-thin);
   --imp-input-height:     var(--imp-height-md);
+  /* Field chrome — a field is a RECESSED well, so it sits a step darker than
+   * the card it lives on (dark theme) or a step lighter-than-page (day). The
+   * placeholder is deliberately mid-grey: legible as a hint, clearly not a
+   * value. Per-theme values below. */
 
   /* Modal / dialog */
   --imp-modal-padding:       calc(1.5rem * var(--imp-density-factor));
@@ -330,6 +334,12 @@
   --imp-color-surface-card:      #ffffff;
   --imp-color-border-card:       #e2e3e8;
   --imp-color-border-card-hover: #c9cad2;
+
+  /* Day mirror: the well is faintly tinted against the white card. */
+  --imp-color-surface-input:      #fbfbfc;
+  --imp-color-border-input:       #dcdde3;
+  --imp-color-border-input-hover: #c9cad2;
+  --imp-color-text-placeholder:   #8a8a96;
   --imp-color-border:        #d7d8de;
   --imp-color-border-strong: #b6b7c0;
 
@@ -396,6 +406,12 @@
   --imp-color-surface-card:      #141415;
   --imp-color-border-card:       #1c1c21;
   --imp-color-border-card-hover: #2a2a32;
+
+  /* Fields read as wells sunk into the card. */
+  --imp-color-surface-input:      hsl(240 6% 5% / 1);
+  --imp-color-border-input:       #1c1c21;
+  --imp-color-border-input-hover: #2a2a32;
+  --imp-color-text-placeholder:   hsl(240 5% 50% / 1);
 }
 
 /* ─── Auto mode — respect OS preference when no data-theme attribute ─────── */
@@ -428,6 +444,11 @@
     --imp-color-surface-card:      #141415;
     --imp-color-border-card:       #1c1c21;
     --imp-color-border-card-hover: #2a2a32;
+
+    --imp-color-surface-input:      hsl(240 6% 5% / 1);
+    --imp-color-border-input:       #1c1c21;
+    --imp-color-border-input-hover: #2a2a32;
+    --imp-color-text-placeholder:   hsl(240 5% 50% / 1);
   }
 }
 

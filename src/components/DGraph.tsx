@@ -469,12 +469,12 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           placeholder="Search entities..."
           value={searchRaw}
           onChange={(e) => setSearchRaw(e.target.value)}
-          className="flex-1 min-w-[12.5rem] px-3 py-1 bg-card text-body placeholder:text-subtle border border-default rounded text-sm focus:outline-none focus:border-primary"
+          className="field-chrome flex-1 min-w-[12.5rem] px-3 py-1 text-body border rounded text-sm focus:outline-none focus:border-primary"
         />
         <select
           value={layout}
           onChange={(e) => setLayout(e.target.value)}
-          className="px-2 py-1 bg-card text-body border border-default rounded text-sm focus:outline-none focus:border-primary"
+          className="field-chrome px-2 py-1 text-body border rounded text-sm focus:outline-none focus:border-primary"
           title="Layout algorithm"
         >
           <option value="cose-bilkent">Force-directed</option>

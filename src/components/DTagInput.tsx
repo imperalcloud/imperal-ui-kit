@@ -155,7 +155,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
   return (
     <div ref={containerRef} className="relative">
       <div
-        className="min-h-[2.75rem] w-full bg-panel border border-default rounded-md px-2 py-1.5 flex flex-wrap gap-1 items-center cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-focus"
+        className="field-chrome min-h-[2.75rem] w-full border rounded-md px-2 py-1.5 flex flex-wrap gap-1 items-center cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-focus"
         role="group"
       >
         {selected.map(tag => (
@@ -183,7 +183,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={selected.length === 0 ? placeholder : ''}
-          className="flex-1 min-w-[5rem] bg-transparent text-sm text-body placeholder:text-subtle outline-none"
+          className="flex-1 min-w-[5rem] bg-transparent text-sm text-body outline-none"
         />
       </div>
 

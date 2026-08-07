@@ -74,7 +74,7 @@ export const DMultiSelect: UIComponent = ({ node }) => {
             if (e.target.value) toggle(e.target.value);
             e.target.value = '';
           }}
-          className="w-full bg-panel border border-default rounded-md px-3 py-2 text-sm text-body focus:border-primary focus:ring-1 focus:ring-focus focus:outline-none"
+          className="field-chrome w-full border rounded-md px-3 py-2 text-sm text-body focus:border-primary focus:ring-1 focus:ring-focus focus:outline-none"
         >
           <option value="">{placeholder || 'Add...'}</option>
           {available.map(o => (
