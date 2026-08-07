@@ -35,6 +35,24 @@ describe('data components', () => {
     expect(thumb.className).toContain('translate-x-[1.375rem]');
   });
 
+  it('contains stat content when its grid column becomes narrow', () => {
+    const { container } = render(<DeclarativeRenderer node={{ type: 'Stat', props: {
+      label: 'Warning status that must stay contained',
+      value: '12345678901234567890',
+      trend: 'ExtremelyLongTrendWithoutSpaces',
+      description: 'DescriptionWithoutAnyNaturalBreakPoint',
+      icon: 'TriangleAlert',
+    } }} />);
+    const card = container.querySelector('.overflow-hidden') as HTMLElement;
+    expect(card).toBeTruthy();
+    expect(card.className).toContain('min-w-0');
+    expect(card.className).toContain('max-w-full');
+    expect(screen.getByText('Warning status that must stay contained').className).toContain('break-words');
+    expect(screen.getByText('12345678901234567890').className).toContain('break-words');
+    expect(screen.getByText('ExtremelyLongTrendWithoutSpaces').parentElement?.className).toContain('flex-wrap');
+    expect(screen.getByText('DescriptionWithoutAnyNaturalBreakPoint').className).toContain('break-words');
+  });
+
   it('sorts data table while preserving the edited source row identity', () => {
     const onAction = vi.fn();
     render(<DeclarativeRenderer onAction={onAction} node={{ type: 'DataTable', props: {
