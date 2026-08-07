@@ -1,0 +1,219 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Imperal Semantic Utilities
+ * ───────────────────────────────────────────────────────────────────────────
+ * Layer 2 of the design system. Semantic Tailwind utilities that read from
+ * tokens.css custom properties. Components written against these utilities
+ * inherit agency theme, dark mode, and reduced motion for free.
+ *
+ * DO NOT use Tailwind's built-in colour scales (bg-gray-800, text-blue-600,
+ * etc.) in new code — ESLint enforces this. Use the utilities below or one
+ * of the primitive wrappers in src/components/primitives/.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* Surfaces (backgrounds) */
+  .bg-app     { background-color: var(--imp-color-surface-0); }
+  .bg-panel   { background-color: var(--imp-color-surface-1); }
+  .bg-card    { background-color: var(--imp-color-surface-2); }
+  .bg-raised  { background-color: var(--imp-color-surface-3); }
+  .bg-code    { background-color: var(--imp-code-bg); }
+
+  /* Text */
+  .text-body       { color: var(--imp-color-text); }
+  .text-muted      { color: var(--imp-color-text-muted); }
+  .text-subtle     { color: var(--imp-color-text-subtle); }
+  .text-on-primary { color: var(--imp-color-text-on-primary); }
+
+  /* Borders */
+  .border-hair    { border-color: var(--imp-color-border-subtle); }
+  .border-default { border-color: var(--imp-color-border); }
+  .border-strong  { border-color: var(--imp-color-border-strong); }
+
+  /* Focus ring */
+  .ring-focus { --tw-ring-color: var(--imp-color-focus-ring); }
+
+  /* Semantic button/pill fills (background + on-primary text colour as a pair) */
+  .bg-primary { background-color: var(--imp-color-primary); color: var(--imp-color-text-on-primary); }
+  .bg-accent  { background-color: var(--imp-color-accent);  color: var(--imp-color-text-on-primary); }
+  .bg-success { background-color: var(--imp-color-success); color: var(--imp-color-text-on-primary); }
+  .bg-warning { background-color: var(--imp-color-warning); color: var(--imp-color-text); }
+  .bg-danger  { background-color: var(--imp-color-danger);  color: var(--imp-color-text-on-primary); }
+  .bg-info    { background-color: var(--imp-color-info);    color: var(--imp-color-text-on-primary); }
+
+  /* Primary hover pair — used by Pill / button wrappers */
+  .hover\:bg-primary-hover:hover { background-color: var(--imp-color-primary-hover); }
+
+  /* ─── Element-level utilities (consume element tokens from tokens.css) ─── */
+
+  /* Button padding presets */
+  .btn-pad-sm { padding: var(--imp-btn-padding-y-sm) var(--imp-btn-padding-x-sm); }
+  .btn-pad-md { padding: var(--imp-btn-padding-y-md) var(--imp-btn-padding-x-md); }
+  .btn-pad-lg { padding: var(--imp-btn-padding-y-lg) var(--imp-btn-padding-x-lg); }
+  .btn-shape {
+    border-radius: var(--imp-btn-radius);
+    font-size: var(--imp-btn-font-size);
+    font-weight: var(--imp-btn-font-weight);
+    transition: var(--imp-btn-transition);
+  }
+
+  /* Icon button squares */
+  .icon-btn-sm { width: var(--imp-icon-btn-size-sm); height: var(--imp-icon-btn-size-sm); border-radius: var(--imp-icon-btn-radius); }
+  .icon-btn-md { width: var(--imp-icon-btn-size-md); height: var(--imp-icon-btn-size-md); border-radius: var(--imp-icon-btn-radius); }
+  .icon-btn-lg { width: var(--imp-icon-btn-size-lg); height: var(--imp-icon-btn-size-lg); border-radius: var(--imp-icon-btn-radius); }
+
+  /* Card */
+  .card-pad    { padding: var(--imp-card-padding); }
+  .card-pad-sm { padding: var(--imp-card-padding-sm); }
+  .card-shape  { border-radius: var(--imp-card-radius); border-width: var(--imp-card-border-w); }
+
+  /* Input */
+  .input-pad   { padding: var(--imp-input-padding-y) var(--imp-input-padding-x); }
+  .input-shape {
+    border-radius: var(--imp-input-radius);
+    border-width:  var(--imp-input-border-w);
+    font-size:     var(--imp-input-font-size);
+    height:        var(--imp-input-height);
+  }
+
+  /* Modal */
+  .modal-shape {
+    border-radius: var(--imp-modal-radius);
+    padding:       var(--imp-modal-padding);
+    max-width:     var(--imp-modal-max-width);
+  }
+
+  /* Pill */
+  .pill-pad-sm { padding: var(--imp-pill-padding-y-sm) var(--imp-pill-padding-x-sm); }
+  .pill-pad-md { padding: var(--imp-pill-padding-y-md) var(--imp-pill-padding-x-md); }
+  .pill-shape  { border-radius: var(--imp-pill-radius); }
+
+  /* Menu / dropdown */
+  .menu-pad       { padding: var(--imp-menu-padding); border-radius: var(--imp-menu-radius); border-width: var(--imp-menu-border-w); }
+  .menu-item-pad  { padding: var(--imp-menu-item-padding-y) var(--imp-menu-item-padding-x); border-radius: var(--imp-menu-item-radius); }
+
+  /* Tooltip */
+  .tooltip-pad {
+    padding:       var(--imp-tooltip-padding-y) var(--imp-tooltip-padding-x);
+    border-radius: var(--imp-tooltip-radius);
+    font-size:     var(--imp-tooltip-font-size);
+  }
+
+  /* Table / list row */
+  .row-pad { padding: var(--imp-row-padding-y) var(--imp-row-padding-x); }
+
+  /* Form spacing */
+  .field-gap { gap: var(--imp-field-gap); }
+  .form-gap  { gap: var(--imp-form-gap); }
+
+  /* Focus outline */
+  .focus-ring {
+    outline: var(--imp-focus-ring-width) solid var(--imp-color-focus-ring);
+    outline-offset: var(--imp-focus-ring-offset);
+  }
+
+  /* DUI page/section/sidebar layout */
+  .page-container {
+    padding: var(--imp-page-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--imp-page-gap);
+  }
+  .page-header-gap   { margin-bottom: var(--imp-page-header-gap); }
+  .section-stack     { display: flex; flex-direction: column; gap: var(--imp-section-gap); }
+  .section-header-gap { margin-bottom: var(--imp-section-header-gap); }
+  .sidebar-chrome {
+    padding-top: var(--imp-sidebar-padding-y);
+    padding-bottom: var(--imp-sidebar-padding-y);
+    display: flex;
+    flex-direction: column;
+    gap: var(--imp-sidebar-gap);
+    width: var(--imp-sidebar-width);
+  }
+  /* Extension shell panes (left/right scroll containers).
+   * Applies generous Imperal-standard padding + vertical rhythm
+   * so ANY extension content — DPage, bare DList, DText, DCard — is
+   * visually contained. Extension devs never have to think about
+   * outer padding. */
+  .ext-pane {
+    padding: var(--imp-ext-pane-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--imp-page-gap);
+    min-width: 0;
+  }
+  /* Every direct child of .ext-pane gets min-width:0 so content compresses
+   * down to pane width rather than distending the pane or bleeding. */
+  .ext-pane > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  /* DPage uses this — just gap, no outer padding (shell provides pad). */
+  .page-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--imp-page-gap);
+  }
+}
+
+/* Component-state utilities — canonical, theme-aware building blocks. */
+@layer utilities {
+  .text-primary { color: var(--imp-color-primary); }
+  .text-success { color: var(--imp-color-success); }
+  .text-warning { color: var(--imp-color-warning); }
+  .text-danger  { color: var(--imp-color-danger); }
+  .text-info    { color: var(--imp-color-info); }
+
+  .border-primary { border-color: var(--imp-color-primary); }
+  .border-success { border-color: var(--imp-color-success); }
+  .border-warning { border-color: var(--imp-color-warning); }
+  .border-danger  { border-color: var(--imp-color-danger); }
+  .border-info    { border-color: var(--imp-color-info); }
+
+  .field-gap { gap: var(--imp-space-1); }
+  .control-base {
+    min-height: 2.75rem;
+    width: 100%;
+    border: 1px solid var(--imp-color-border);
+    border-radius: var(--imp-radius-md);
+    background: var(--imp-color-surface-1);
+    color: var(--imp-color-text);
+    padding: .625rem .75rem;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    transition: border-color var(--imp-duration-fast), box-shadow var(--imp-duration-fast), background-color var(--imp-duration-fast);
+  }
+  .control-base::placeholder { color: var(--imp-color-text-subtle); }
+  .control-base:hover:not(:disabled) { border-color: var(--imp-color-border-strong); }
+  .control-base:focus-visible { outline: 2px solid var(--imp-color-focus-ring); outline-offset: 2px; }
+  .control-base:disabled { cursor: not-allowed; opacity: .55; }
+  .control-error { border-color: var(--imp-color-danger); }
+
+  .button-base {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    border-radius: var(--imp-radius-md);
+    padding-inline: 1rem;
+    font-weight: 600;
+    transition: filter var(--imp-duration-fast), background-color var(--imp-duration-fast), border-color var(--imp-duration-fast), color var(--imp-duration-fast);
+  }
+  .button-base:hover:not(:disabled) { filter: brightness(1.08); }
+  .button-base:focus-visible { outline: 2px solid var(--imp-color-focus-ring); outline-offset: 2px; }
+  .button-base:disabled { cursor: not-allowed; opacity: .55; }
+  .button-secondary { background: var(--imp-color-surface-3); border: 1px solid var(--imp-color-border); color: var(--imp-color-text); }
+  .button-ghost { background: transparent; border: 1px solid transparent; color: var(--imp-color-text-muted); }
+  .button-ghost:hover:not(:disabled) { background: var(--imp-color-surface-2); color: var(--imp-color-text); }
+  .button-danger { background: color-mix(in srgb, var(--imp-color-danger) 16%, transparent); border: 1px solid color-mix(in srgb, var(--imp-color-danger) 40%, transparent); color: var(--imp-color-danger); }
+
+  .icon-btn-sm { min-width: 2.75rem; min-height: 2.75rem; border-radius: var(--imp-radius-md); }
+  .focus-ring:focus-visible { outline: 2px solid var(--imp-color-focus-ring); outline-offset: 2px; }
+  .overflow-wrap-anywhere { overflow-wrap: anywhere; }
+}
+
+@media (pointer: fine) {
+  @layer utilities {
+    .button-base[data-size="sm"], .icon-btn-sm { min-height: 2rem; min-width: 2rem; }
+  }
+}

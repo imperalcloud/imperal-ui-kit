@@ -31,7 +31,7 @@
     "styles.d.ts"
   ],
   "scripts": {
-    "build": "tsup && npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}' && node scripts/scope-css.mjs",
+    "build": "npm run tokens:check && tsup && npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}' && node scripts/scope-css.mjs && node scripts/mark-client-entries.mjs",
     "build:css": "npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -41,7 +41,9 @@
     "lint": "eslint src",
     "coverage": "vitest run --coverage",
     "check:css": "node scripts/check-css-isolation.mjs",
-    "check:bundle": "node scripts/check-bundle-budget.mjs"
+    "check:bundle": "node scripts/check-bundle-budget.mjs",
+    "tokens:sync": "node scripts/sync-design-tokens.mjs",
+    "tokens:check": "node scripts/sync-design-tokens.mjs --check"
   },
   "peerDependencies": {
     "react": ">=19",
