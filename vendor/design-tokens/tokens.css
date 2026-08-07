@@ -135,16 +135,12 @@
   --imp-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* ── Elevation ─────────────────────────────────────────────────────────────
-   * Depth scale for CONTAINERS (cards, menus, dialogs). Distinct from the raw
-   * --imp-shadow-* ramp: each level pairs an ambient shadow with a 1px inner
-   * top highlight (--imp-sheen-top), so a surface reads as a raised object
-   * rather than a flat rectangle. Alphas are tuned for the dark default
-   * theme and overridden per-theme below. */
+   * Depth is spent ONLY on layers that genuinely float above the page:
+   * menus, popovers, dialogs, toasts. Flat containers — cards, stats, tables
+   * — carry NO shadow and NO inner glow: one crisp hairline reads cleaner and
+   * keeps dense panels calm. One idea per edge. */
   --imp-elevation-0: none;
-  --imp-elevation-1: 0 1px 2px -1px rgb(0 0 0 / 0.30), 0 2px 8px -3px rgb(0 0 0 / 0.24);
-  --imp-elevation-2: 0 2px 4px -2px rgb(0 0 0 / 0.34), 0 8px 18px -6px rgb(0 0 0 / 0.30);
-  --imp-elevation-3: 0 8px 24px -8px rgb(0 0 0 / 0.40), 0 18px 44px -14px rgb(0 0 0 / 0.34);
-  --imp-sheen-top:   inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+  --imp-elevation-overlay: 0 12px 32px -12px rgb(0 0 0 / 0.45);
 
   /* Z-index */
   --imp-z-dropdown: 1000;
@@ -222,17 +218,14 @@
   /* Card */
   --imp-card-padding:     calc(1.5rem * var(--imp-density-factor));
   --imp-card-padding-sm:  calc(1rem   * var(--imp-density-factor));
-  --imp-card-radius:      var(--imp-radius-lg);
+  --imp-card-radius:      var(--imp-radius-xl);
   --imp-card-border-w:    var(--imp-border-thin);
-  /* Container chrome — one contract every card-like surface reads from, so
-   * borders/elevation stay identical across Card, Stat, Alert, Table, Dialog. */
-  --imp-card-border-color:        var(--imp-color-border-subtle);
-  --imp-card-border-color-hover:  var(--imp-color-border-strong);
-  /* Ambient depth only — the inner sheen is applied by the .surface-*
-   * utilities so it is never doubled up. */
-  --imp-card-shadow:              var(--imp-elevation-1);
-  --imp-card-shadow-hover:        var(--imp-elevation-2);
-  --imp-card-lift-hover:          -1px;
+  /* Container chrome — the ONE contract every card-like surface reads from, so
+   * every card in the product shares an identical edge. Deliberately only
+   * fill + hairline: the sole thing that reacts to hover is the border. */
+  --imp-card-bg:                  var(--imp-color-surface-card);
+  --imp-card-border-color:        var(--imp-color-border-card);
+  --imp-card-border-color-hover:  var(--imp-color-border-card-hover);
 
   /* Input / textarea / select */
   --imp-input-padding-x:  calc(0.75rem * var(--imp-density-factor));
@@ -314,25 +307,34 @@
   --imp-color-danger:        var(--imp-red-600);
   --imp-color-info:          var(--imp-blue-400);
 
-  --imp-color-surface-0: #ffffff;
-  --imp-color-surface-1: var(--imp-gray-50);
-  --imp-color-surface-2: var(--imp-gray-100);
-  --imp-color-surface-3: var(--imp-gray-200);
+  /* Day theme — mirrors the dark theme's logic instead of inverting it.
+   * The PAGE is the tinted layer and CARDS are pure white, so a card reads as
+   * a lifted sheet of paper. (Previously the page and the card were both
+   * #ffffff — contrast 1.0 — so cards were invisible and everything relied on
+   * one washed-out grey line, which is what made light mode feel flat.) */
+  --imp-color-surface-0: #f6f7f9;
+  --imp-color-surface-1: #fbfbfc;
+  --imp-color-surface-2: #ffffff;
+  --imp-color-surface-3: var(--imp-gray-100);
 
-  --imp-color-text:            var(--imp-gray-900);
-  --imp-color-text-muted:      var(--imp-gray-600);
-  --imp-color-text-subtle:     var(--imp-gray-400);
+  /* Warm-neutral ink: near-black for body, genuinely readable secondary. */
+  --imp-color-text:            #18181b;
+  --imp-color-text-muted:      #5b5b66;
+  --imp-color-text-subtle:     #8a8a96;
   --imp-color-text-on-primary: #ffffff;
 
-  --imp-color-border-subtle: var(--imp-gray-200);
-  --imp-color-border:        var(--imp-gray-300);
-  --imp-color-border-strong: var(--imp-gray-400);
+  --imp-color-border-subtle: #e6e7ea;
+
+  /* Card palette — light mirror of the dark contract: white sheet on a
+   * tinted page, with a hairline that is actually visible against both. */
+  --imp-color-surface-card:      #ffffff;
+  --imp-color-border-card:       #e2e3e8;
+  --imp-color-border-card-hover: #c9cad2;
+  --imp-color-border:        #d7d8de;
+  --imp-color-border-strong: #b6b7c0;
 
   /* Light surfaces need far less ambient darkness, and a bright inner edge. */
-  --imp-elevation-1: 0 1px 2px -1px rgb(9 9 11 / 0.06), 0 2px 8px -3px rgb(9 9 11 / 0.06);
-  --imp-elevation-2: 0 2px 4px -2px rgb(9 9 11 / 0.08), 0 8px 18px -6px rgb(9 9 11 / 0.08);
-  --imp-elevation-3: 0 8px 24px -8px rgb(9 9 11 / 0.12), 0 18px 44px -14px rgb(9 9 11 / 0.10);
-  --imp-sheen-top:   inset 0 1px 0 0 rgb(255 255 255 / 0.85);
+  --imp-elevation-overlay: 0 12px 32px -12px rgb(9 9 11 / 0.16);
 
   --imp-color-focus-ring: rgb(from var(--imp-color-primary) r g b / 0.4);
 
@@ -388,6 +390,12 @@
   --imp-color-border-subtle: #32323a;
   --imp-color-border:        var(--imp-gray-700);
   --imp-color-border-strong: #56565f;
+
+  /* Card palette — a deep near-black card on the page black, separated by a
+   * whisper-thin hairline rather than by shadow. Quiet, modern, legible. */
+  --imp-color-surface-card:      #141415;
+  --imp-color-border-card:       #1c1c21;
+  --imp-color-border-card-hover: #2a2a32;
 }
 
 /* ─── Auto mode — respect OS preference when no data-theme attribute ─────── */
@@ -416,6 +424,10 @@
     --imp-color-border-subtle: #32323a;
     --imp-color-border:        var(--imp-gray-700);
     --imp-color-border-strong: #56565f;
+
+    --imp-color-surface-card:      #141415;
+    --imp-color-border-card:       #1c1c21;
+    --imp-color-border-card-hover: #2a2a32;
   }
 }
 

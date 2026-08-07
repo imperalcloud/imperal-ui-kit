@@ -212,20 +212,20 @@
   .overflow-wrap-anywhere { overflow-wrap: anywhere; }
 
   /* ═══ Surfaces — the canonical container treatment ════════════════════════
-   * ONE definition of what a "card" looks like: fill + hairline + radius +
-   * elevation + inner sheen. Components use these instead of hand-rolling
-   * `bg-card/40 border border-hair/50 rounded-lg`, which is how the borders
-   * drifted apart (18 border variants, 8 radii) in the first place.
+   * ONE definition of what a "card" looks like: fill + hairline + radius.
+   * Deliberately NO shadow and NO inner glow on flat containers — stacking
+   * shadow + sheen + border on every card is what made dense panels feel
+   * heavy and cluttered. One idea per edge: a single crisp hairline.
    *
-   *   .surface        — flat, bordered container (no lift)
-   *   .surface-raised — the default card: subtle lift + top sheen
-   *   .surface-overlay— menus/popovers/dialogs: strongest lift
+   *   .surface         — flat, bordered container (the default card)
+   *   .surface-raised  — alias of .surface, kept for intent at call sites
+   *   .surface-overlay — menus/popovers/dialogs: the ONLY layer with depth
    *
    * Compose with .surface-interactive when the container is clickable. */
   .surface,
   .surface-raised,
   .surface-overlay {
-    background-color: var(--imp-color-surface-2);
+    background-color: var(--imp-color-surface-card);
     border: var(--imp-card-border-w) solid var(--imp-card-border-color);
     border-radius: var(--imp-card-radius);
     /* Contain children: nothing can paint outside the rounded hairline. */
@@ -233,25 +233,21 @@
     max-width: 100%;
   }
 
-  .surface          { box-shadow: var(--imp-elevation-0); }
-  .surface-raised   { box-shadow: var(--imp-card-shadow), var(--imp-sheen-top); }
+  .surface,
+  .surface-raised { box-shadow: var(--imp-elevation-0); }
+
+  /* Floating layers earn depth — they must detach from the page behind them. */
   .surface-overlay {
-    background-color: var(--imp-color-surface-1);
-    border-radius: var(--imp-radius-xl);
-    box-shadow: var(--imp-elevation-3), var(--imp-sheen-top);
+    box-shadow: var(--imp-elevation-overlay);
   }
 
-  /* Interactive containers: the border is what responds, not the fill —
-   * that keeps hover calm instead of flashing a whole panel. */
+  /* Interactive containers: the BORDER responds, never the fill. No lift, no
+   * shadow bloom — the edge simply brightens. Calm at any density. */
   .surface-interactive {
-    transition:
-      border-color var(--imp-duration-normal) var(--imp-ease-out),
-      box-shadow   var(--imp-duration-normal) var(--imp-ease-out),
-      transform    var(--imp-duration-normal) var(--imp-ease-out);
+    transition: border-color var(--imp-duration-normal) var(--imp-ease-out);
   }
   .surface-interactive:hover {
     border-color: var(--imp-card-border-color-hover);
-    box-shadow: var(--imp-card-shadow-hover), var(--imp-sheen-top);
   }
   .surface-interactive:focus-visible {
     outline: var(--imp-focus-ring-width) solid var(--imp-color-focus-ring);
