@@ -119,21 +119,21 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
 
   return (
     <div
-      className="overflow-auto rounded-lg border border-gray-800/50"
+      className="overflow-auto rounded-lg border border-hair/50"
       style={max_height ? { maxHeight: max_height } : undefined}
     >
       <table className="w-full text-sm border-collapse">
         <thead className={sticky_header ? 'sticky top-0 z-10' : ''}>
-          <tr className="bg-gray-800/60 border-b border-gray-800/50">
+          <tr className="bg-card/60 border-b border-hair/50">
             {columns.map((col) => (
               <th
                 key={col.key}
                 aria-sort={sort.key === col.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
                 style={col.width ? { width: col.width } : undefined}
                 className={[
-                  'px-3 py-2.5 text-left text-xs font-medium text-gray-400 uppercase tracking-wide',
+                  'px-3 py-2.5 text-left text-xs font-medium text-muted uppercase tracking-wide',
                   'whitespace-nowrap select-none',
-                  col.sortable ? 'cursor-pointer hover:text-gray-200 transition-colors' : '',
+                  col.sortable ? 'cursor-pointer hover:text-body transition-colors' : '',
                 ].join(' ')}
               >
                 <button type="button" disabled={!col.sortable} onClick={() => handleSort(col)} className="flex items-center gap-1 disabled:cursor-default">
@@ -141,11 +141,11 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                   {col.sortable && (
                     <span className="flex flex-col">
                       {sort.key === col.key && sort.dir === 'asc' ? (
-                        <ChevronUp className="w-3 h-3 text-blue-400" />
+                        <ChevronUp className="w-3 h-3 text-primary" />
                       ) : sort.key === col.key && sort.dir === 'desc' ? (
-                        <ChevronDown className="w-3 h-3 text-blue-400" />
+                        <ChevronDown className="w-3 h-3 text-primary" />
                       ) : (
-                        <ChevronsUpDown className="w-3 h-3 text-gray-600" />
+                        <ChevronsUpDown className="w-3 h-3 text-subtle" />
                       )}
                     </span>
                   )}
@@ -159,7 +159,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-3 py-8 text-center text-gray-600 text-sm"
+                className="px-3 py-8 text-center text-subtle text-sm"
               >
                 {empty_text}
               </td>
@@ -172,11 +172,11 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                 onKeyDown={isClickable ? event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleRowClick(row); } } : undefined}
                 tabIndex={isClickable ? 0 : undefined}
                 className={[
-                  'border-b border-gray-800/30 last:border-b-0',
+                  'border-b border-hair/30 last:border-b-0',
                   'transition-colors',
                   isClickable
-                    ? 'cursor-pointer hover:bg-gray-800/40'
-                    : 'hover:bg-gray-800/20',
+                    ? 'cursor-pointer hover:bg-card'
+                    : 'hover:bg-card/20',
                 ].join(' ')}
               >
                 {columns.map((col) => {
@@ -189,7 +189,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                     return (
                       <td
                         key={col.key}
-                        className="px-3 py-2.5 text-gray-300 text-sm"
+                        className="px-3 py-2.5 text-body text-sm"
                         onClick={(e) => { e.stopPropagation(); handleToggle(row, col); }}
                       >
                         <button
@@ -199,7 +199,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                           aria-checked={boolVal}
                           className={[
                             'relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none',
-                            boolVal ? 'bg-blue-500' : 'bg-gray-600',
+                            boolVal ? 'bg-primary' : 'bg-raised',
                           ].join(' ')}
                         >
                           <span
@@ -219,7 +219,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                       return (
                         <td
                           key={col.key}
-                          className="px-3 py-2 text-gray-300 text-sm"
+                          className="px-3 py-2 text-body text-sm"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <input
@@ -232,7 +232,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                               if (e.key === 'Enter') commitEdit(row, col, editValue);
                               if (e.key === 'Escape') setEditing(null);
                             }}
-                            className="w-full bg-gray-700 border border-blue-500 rounded px-2 py-1 text-gray-100 text-sm focus:outline-none"
+                            className="w-full bg-raised border border-primary rounded px-2 py-1 text-body text-sm focus:outline-none"
                           />
                         </td>
                       );
@@ -240,12 +240,12 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                     return (
                       <td
                         key={col.key}
-                        className="px-3 py-2.5 text-gray-300 text-sm cursor-text hover:bg-gray-700/40 group"
+                        className="px-3 py-2.5 text-body text-sm cursor-text hover:bg-raised group"
                         onClick={(e) => { e.stopPropagation(); startEdit(sourceIndex, col, row); }}
                       >
                         <span className="flex items-center gap-1">
                           {String(row[col.key] ?? '')}
-                          <span className="opacity-0 group-hover:opacity-40 text-gray-400 text-xs">✎</span>
+                          <span className="opacity-0 group-hover:opacity-40 text-muted text-xs">✎</span>
                         </span>
                       </td>
                     );
@@ -255,7 +255,7 @@ export const DDataTable: UIComponent = ({ node, onAction }) => {
                   return (
                     <td
                       key={col.key}
-                      className="px-3 py-2.5 text-gray-300 text-sm"
+                      className="px-3 py-2.5 text-body text-sm"
                     >
                       {String(row[col.key] ?? '')}
                     </td>

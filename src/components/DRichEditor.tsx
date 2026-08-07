@@ -25,8 +25,8 @@ function ToolbarBtn({
       className={[
         'p-1.5 rounded text-xs transition-all duration-150',
         active
-          ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-          : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 border border-transparent',
+          ? 'bg-primary/20 text-primary border border-primary/30'
+          : 'text-muted hover:text-body hover:bg-card border border-transparent',
       ].join(' ')}
     >
       {children}
@@ -35,7 +35,7 @@ function ToolbarBtn({
 }
 
 function ToolbarDivider() {
-  return <div className="w-px h-4 bg-zinc-800 mx-1 flex-shrink-0" />;
+  return <div className="w-px h-4 bg-card mx-1 flex-shrink-0" />;
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
     content: initContent,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-sm max-w-none focus:outline-none min-h-[120px] px-3 py-2',
+        class: 'prose prose-invert prose-sm max-w-none focus:outline-none min-h-[7.5rem] px-3 py-2',
       },
     },
     onUpdate: ({ editor }) => {
@@ -123,14 +123,14 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync external content changes (e.g. form reset)
+  // Sync external content changes from a form reset or a refreshed declarative payload.
   useEffect(() => {
-    if (!editor || !form) return;
-    const formVal = form.values[param_name] as string | undefined;
-    if (formVal !== undefined && formVal !== editor.getHTML()) {
-      editor.commands.setContent(formVal, { emitUpdate: false });
+    if (!editor) return;
+    const external = form ? form.values[param_name] as string | undefined : initContent;
+    if (external !== undefined && external !== editor.getHTML()) {
+      editor.commands.setContent(external, { emitUpdate: false });
     }
-  }, [editor, form, param_name]);
+  }, [editor, form, form?.values[param_name], initContent, param_name]);
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -140,10 +140,10 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
   }, []);
 
   return (
-    <div className="flex flex-col rounded-md border border-zinc-700 bg-zinc-900 overflow-hidden">
+    <div className="flex flex-col rounded-md border border-default bg-panel overflow-hidden">
       {/* Toolbar */}
       {toolbar && editor && (
-        <div className="flex items-center flex-wrap gap-0 px-2 py-1.5 border-b border-zinc-800 bg-zinc-950/50">
+        <div className="flex items-center flex-wrap gap-0 px-2 py-1.5 border-b border-hair bg-app/50">
           <ToolbarBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
             <span className="font-bold">B</span>
           </ToolbarBtn>

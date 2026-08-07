@@ -22,8 +22,8 @@ function getInitials(name: string): string {
 
 function colorFromName(name: string): string {
   const colors = [
-    'bg-blue-600', 'bg-purple-600', 'bg-green-700', 'bg-orange-600',
-    'bg-pink-600', 'bg-teal-600', 'bg-indigo-600', 'bg-rose-600',
+    'bg-primary', 'bg-accent', 'bg-success', 'bg-warning',
+    'bg-accent', 'bg-teal-600', 'bg-indigo-600', 'bg-rose-600',
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -59,7 +59,7 @@ export const DAvatar: UIComponent = ({ node }) => {
       {showImage ? (
         <img src={src} alt={displayName} className="w-full h-full object-cover" onError={() => setImgError(true)} />
       ) : (
-        <div className={`w-full h-full ${fallbackColor} flex items-center justify-center font-semibold text-white`}>
+        <div className={`w-full h-full ${fallbackColor} flex items-center justify-center font-semibold text-body`}>
           {getInitials(displayName)}
         </div>
       )}

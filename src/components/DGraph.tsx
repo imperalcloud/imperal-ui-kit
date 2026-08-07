@@ -121,6 +121,8 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     color_by = 'type',
     animate = true,
     on_node_click,
+    title = 'Relationship graph',
+    description = '',
   } = node.props as {
     nodes?: GraphNode[];
     edges?: GraphEdge[];
@@ -132,6 +134,8 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     color_by?: string;
     animate?: boolean;
     on_node_click?: UIAction;
+    title?: string;
+    description?: string;
   };
 
   const { uniqueTypes, typeCounts, maxMentions } = useMemo(() => {
@@ -166,13 +170,11 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
   const cyRef = useRef<CyCore | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    ensureLayoutsRegistered().then(() => {
-      if (!cancelled) setLayoutsReady(true);
+    const controller = new AbortController();
+    void ensureLayoutsRegistered().then(() => {
+      if (!controller.signal.aborted) setLayoutsReady(true);
     });
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, []);
 
   const elements = useMemo(() => {
@@ -208,7 +210,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           label: 'data(label)',
           width: `mapData(size, 0, 50, ${min_node_size}, ${max_node_size})`,
           height: `mapData(size, 0, 50, ${min_node_size}, ${max_node_size})`,
-          'font-size': '10px',
+          'font-size': '.625rem',
           'font-family': 'system-ui, -apple-system, sans-serif',
           'text-valign': 'bottom',
           'text-halign': 'center',
@@ -229,7 +231,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
           label: showLabels ? 'data(label)' : '',
-          'font-size': '8px',
+          'font-size': '.5rem',
           color: '#94a3b8',
           'text-rotation': 'autorotate',
           opacity: 0.55,
@@ -439,7 +441,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     return (
       <div
         ref={containerRef}
-        className="flex items-center justify-center rounded-lg border border-gray-800/50 bg-gray-900/40 text-sm text-gray-500"
+        className="flex items-center justify-center rounded-lg border border-hair/50 bg-panel/40 text-sm text-muted"
         style={{ height }}
       >
         Empty graph — no entities to display.
@@ -451,20 +453,28 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
   const totalEdges = edges.length;
 
   return (
-    <div className="flex flex-col border border-gray-800/50 rounded-lg bg-gray-900/40 overflow-hidden">
+    <figure aria-label={title} className="flex flex-col overflow-hidden rounded-lg border border-hair bg-panel">
+      <figcaption className="sr-only">{title}. {description || `${totalNodes} nodes and ${totalEdges} relationships.`}</figcaption>
+      <details className="border-b border-hair p-2 text-sm text-body">
+        <summary className="cursor-pointer font-medium focus-ring">Accessible graph data</summary>
+        <div className="mt-2 grid gap-3 md:grid-cols-2">
+          <section aria-label="Entities"><h3 className="mb-1 font-medium">Entities ({totalNodes})</h3><ul className="max-h-48 overflow-auto text-xs text-muted">{nodes.map(item => <li key={item.id}>{item.label ?? item.id}{item.type ? ` — ${item.type}` : ''}</li>)}</ul></section>
+          <section aria-label="Relationships"><h3 className="mb-1 font-medium">Relationships ({totalEdges})</h3><ul className="max-h-48 overflow-auto text-xs text-muted">{edges.map((item, index) => <li key={item.id ?? `${item.source}-${item.target}-${index}`}>{item.source} → {item.target}{item.label ? ` — ${item.label}` : ''}</li>)}</ul></section>
+        </div>
+      </details>
       {/* Row 1: search + layout + action buttons + edge label toggle */}
-      <div className="flex items-center gap-2 p-2 border-b border-gray-800/50 flex-wrap bg-gray-900/60">
+      <div className="flex items-center gap-2 p-2 border-b border-hair/50 flex-wrap bg-panel/60">
         <input
           type="text"
           placeholder="Search entities..."
           value={searchRaw}
           onChange={(e) => setSearchRaw(e.target.value)}
-          className="flex-1 min-w-[200px] px-3 py-1 bg-gray-800 text-gray-100 placeholder-gray-500 border border-gray-700 rounded text-sm focus:outline-none focus:border-blue-500"
+          className="flex-1 min-w-[12.5rem] px-3 py-1 bg-card text-body placeholder:text-subtle border border-default rounded text-sm focus:outline-none focus:border-primary"
         />
         <select
           value={layout}
           onChange={(e) => setLayout(e.target.value)}
-          className="px-2 py-1 bg-gray-800 text-gray-100 border border-gray-700 rounded text-sm focus:outline-none focus:border-blue-500"
+          className="px-2 py-1 bg-card text-body border border-default rounded text-sm focus:outline-none focus:border-primary"
           title="Layout algorithm"
         >
           <option value="cose-bilkent">Force-directed</option>
@@ -476,7 +486,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         <button
           type="button"
           onClick={fitToView}
-          className="px-3 py-1 bg-gray-800 hover:bg-gray-700 text-gray-100 border border-gray-700 rounded text-sm"
+          className="px-3 py-1 bg-card hover:bg-raised text-body border border-default rounded text-sm"
           title="Fit graph to view"
         >
           Fit
@@ -484,7 +494,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         <button
           type="button"
           onClick={resetFilters}
-          className="px-3 py-1 bg-gray-800 hover:bg-gray-700 text-gray-100 border border-gray-700 rounded text-sm"
+          className="px-3 py-1 bg-card hover:bg-raised text-body border border-default rounded text-sm"
           title="Clear all filters"
         >
           Reset
@@ -492,12 +502,12 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         <button
           type="button"
           onClick={downloadPng}
-          className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm"
+          className="px-3 py-1 bg-primary hover:bg-primary text-body rounded text-sm"
           title="Download graph as PNG"
         >
           PNG
         </button>
-        <label className="flex items-center gap-1.5 text-sm text-gray-300 cursor-pointer select-none">
+        <label className="flex items-center gap-1.5 text-sm text-body cursor-pointer select-none">
           <input
             type="checkbox"
             checked={showLabels}
@@ -510,8 +520,8 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
 
       {/* Row 2: type filter checkboxes */}
       {uniqueTypes.length > 0 && (
-        <div className="flex items-center gap-2 p-2 border-b border-gray-800/50 flex-wrap bg-gray-900/40">
-          <span className="text-xs text-gray-500 uppercase tracking-wide">Types:</span>
+        <div className="flex items-center gap-2 p-2 border-b border-hair/50 flex-wrap bg-panel/40">
+          <span className="text-xs text-muted uppercase tracking-wide">Types:</span>
           {uniqueTypes.map((t) => {
             const hidden = hiddenTypes.has(t);
             return (
@@ -519,8 +529,8 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
                 key={t}
                 className={`flex items-center gap-1.5 px-2 py-0.5 rounded cursor-pointer text-xs select-none border ${
                   hidden
-                    ? 'bg-gray-900 text-gray-500 border-gray-800'
-                    : 'bg-gray-800 text-gray-100 border-gray-700'
+                    ? 'bg-panel text-muted border-hair'
+                    : 'bg-card text-body border-default'
                 }`}
                 style={{ borderLeftWidth: 3, borderLeftColor: typeColor(t) }}
               >
@@ -531,7 +541,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
                   className="accent-blue-500"
                 />
                 <span>{t}</span>
-                <span className="text-gray-500">({typeCounts[t]})</span>
+                <span className="text-muted">({typeCounts[t]})</span>
               </label>
             );
           })}
@@ -539,10 +549,10 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
       )}
 
       {/* Row 3: sliders */}
-      <div className="flex items-center gap-6 p-2 border-b border-gray-800/50 flex-wrap bg-gray-900/40">
-        <label className="flex items-center gap-2 text-xs text-gray-300">
+      <div className="flex items-center gap-6 p-2 border-b border-hair/50 flex-wrap bg-panel/40">
+        <label className="flex items-center gap-2 text-xs text-body">
           <span>Min mentions:</span>
-          <span className="font-mono text-gray-100 min-w-[1.5rem] text-right">{minMentions}</span>
+          <span className="font-mono text-body min-w-[1.5rem] text-right">{minMentions}</span>
           <input
             type="range"
             min={1}
@@ -551,11 +561,11 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
             onChange={(e) => setMinMentions(Number(e.target.value))}
             className="w-32 accent-blue-500"
           />
-          <span className="text-gray-500">/ {maxMentions}</span>
+          <span className="text-muted">/ {maxMentions}</span>
         </label>
-        <label className="flex items-center gap-2 text-xs text-gray-300">
+        <label className="flex items-center gap-2 text-xs text-body">
           <span>Min strength:</span>
-          <span className="font-mono text-gray-100 min-w-[2.5rem] text-right">
+          <span className="font-mono text-body min-w-[2.5rem] text-right">
             {minStrength.toFixed(2)}
           </span>
           <input
@@ -573,7 +583,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
       {/* Graph canvas */}
       <div ref={containerRef} style={{ height, width: '100%', position: 'relative' }}>
         {layoutsReady ? (
-          <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">Loading graph renderer…</div>}>
+          <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-xs text-muted">Loading graph renderer…</div>}>
             <CytoscapeComponent
               elements={elements}
               style={{ width: '100%', height: '100%' }}
@@ -586,15 +596,15 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
             />
           </Suspense>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-muted">
             Loading graph renderer…
           </div>
         )}
-        <div className="absolute bottom-2 right-2 text-[10px] text-gray-400 bg-black/70 px-2 py-1 rounded border border-gray-800/50 pointer-events-none font-mono">
+        <div className="absolute bottom-2 right-2 text-[.625rem] text-muted bg-black/70 px-2 py-1 rounded border border-hair/50 pointer-events-none font-mono">
           Showing {visibleNodeCount} / {totalNodes} nodes · {visibleEdgeCount} / {totalEdges} edges
           · {layout} · {lastAction}
         </div>
       </div>
-    </div>
+    </figure>
   );
 };

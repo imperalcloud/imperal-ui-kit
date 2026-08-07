@@ -121,7 +121,18 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
   const [notice, setNotice] = useState(''); // batch-level message (e.g. "max 5 files")
   const ref = useRef<HTMLInputElement>(null);
   const previewUrls = useRef(new Set<string>());
+  const generation = useRef(0);
+  const identity = `${node.id ?? node.key ?? node.type}:${node.revision ?? ''}`;
+  useEffect(() => {
+    generation.current += 1;
+    setRows([]);
+    setNotice('');
+    previewUrls.current.forEach(url => URL.revokeObjectURL(url));
+    previewUrls.current.clear();
+  }, [identity]);
+
   useEffect(() => () => {
+    generation.current += 1;
     previewUrls.current.forEach(url => URL.revokeObjectURL(url));
     previewUrls.current.clear();
   }, []);
@@ -170,6 +181,7 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
     if (!fileList || !fileList.length) return;
     setNotice('');
 
+    const activeGeneration = generation.current;
     const existing = rows;
     const accepted: FileRow[] = [];
     const fileByRow = new Map<string, File>();
@@ -225,7 +237,7 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
           reader.onerror = () => reject(new Error('read failed'));
           reader.readAsDataURL(file);
         });
-        if (!base64) throw new Error('empty');
+        if (!base64 || activeGeneration !== generation.current) throw new Error('stale');
         encoded.push({ client_id: row.client_id, name: row.name, size: row.size, mime_type: row.mime_type, data_base64: base64 });
         setRows(prev => prev.map(r => r.client_id === row.client_id ? { ...r, data_base64: base64, status: 'uploading' } : r));
       } catch {
@@ -236,8 +248,15 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
     // Dispatch the successfully-read files in ONE on_upload call. Without a
     // server statuses feed the rows stay "uploading" (a spinner) until the
     // panel refreshes; the extension reconciles them via `statuses`.
-    if (on_upload && onAction && encoded.length) {
-      onAction({ ...on_upload, params: { ...(on_upload.params || {}), [param_name]: encoded } });
+    if (on_upload && onAction && encoded.length && activeGeneration === generation.current) {
+      try {
+        await Promise.resolve(onAction({ ...on_upload, params: { ...(on_upload.params || {}), [param_name]: encoded } }));
+      } catch {
+        const failed = new Set(encoded.map(file => file.client_id));
+        setRows(previous => previous.map(row => failed.has(row.client_id)
+          ? { ...row, status: 'error', error: 'Upload failed. Try again.' }
+          : row));
+      }
     }
   }, [rows, blocked_extensions, max_size_mb, max_files, max_total_mb, show_previews, on_upload, onAction, param_name]);
 
@@ -263,26 +282,26 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
         className={[
           'group relative rounded-xl border-2 border-dashed cursor-pointer text-center',
           'outline-none transition-all duration-200 motion-reduce:transition-none',
-          'focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
+          'focus-visible:ring-2 focus-visible:ring-focus/70 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
           compact ? 'p-3' : 'p-6',
           dragOver
-            ? 'border-blue-500 bg-blue-500/10 scale-[1.01] motion-reduce:scale-100'
-            : 'border-gray-700 hover:border-gray-500 hover:bg-white/[0.02]',
-          futuristic && dragOver ? 'shadow-[0_0_0_4px_rgba(59,130,246,0.15)]' : '',
+            ? 'border-primary bg-primary/10 scale-[1.01] motion-reduce:scale-100'
+            : 'border-default hover:border-strong hover:bg-white/[0.02]',
+          futuristic && dragOver ? 'shadow-[0_0_0_.25rem_color-mix(in_srgb,var(--imp-color-primary)_15%,transparent)]' : '',
         ].join(' ')}
       >
         <div className={[
           'mx-auto mb-2 flex items-center justify-center rounded-full',
           compact ? 'w-8 h-8' : 'w-12 h-12',
-          dragOver ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-800 text-gray-400',
+          dragOver ? 'bg-primary/20 text-primary' : 'bg-card text-muted',
           futuristic ? 'transition-transform group-hover:scale-105 motion-reduce:transition-none' : '',
         ].join(' ')}>
           <Upload className={compact ? 'w-4 h-4' : 'w-6 h-6'} />
         </div>
-        <p className={['text-gray-200', compact ? 'text-xs' : 'text-sm font-medium'].join(' ')}>
+        <p className={['text-body', compact ? 'text-xs' : 'text-sm font-medium'].join(' ')}>
           {title || (dragOver ? 'Drop to upload' : 'Drop files or click to browse')}
         </p>
-        <p className="text-xs text-gray-500 mt-0.5">
+        <p className="text-xs text-muted mt-0.5">
           {hint || `Up to ${max_size_mb} MB per file${max_total_mb ? `, ${max_total_mb} MB total` : ''}${max_files ? `, ${max_files} files max` : ''}`}
         </p>
       </div>
@@ -293,7 +312,7 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
         className="hidden"
       />
 
-      {notice && <p className="text-xs text-amber-400" role="alert">{notice}</p>}
+      {notice && <p className="text-xs text-warning" role="alert">{notice}</p>}
 
       {view.length > 0 && (
         <ul className="space-y-1" aria-label="Selected files">
@@ -305,37 +324,37 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
             return (
               <li
                 key={r.client_id}
-                className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-2 py-1.5 text-sm"
+                className="flex items-center gap-2 bg-card/50 rounded-lg px-2 py-1.5 text-sm"
               >
                 {show_previews && r.preview
                   ? <img src={r.preview} alt="" className="w-6 h-6 rounded object-cover shrink-0" />
-                  : <Icon className="w-4 h-4 text-gray-400 shrink-0" />}
+                  : <Icon className="w-4 h-4 text-muted shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-200 truncate">{r.name}</span>
-                    <span className="text-gray-500 text-xs shrink-0">{formatSize(r.size)}</span>
+                    <span className="text-body truncate">{r.name}</span>
+                    <span className="text-muted text-xs shrink-0">{formatSize(r.size)}</span>
                   </div>
                   {bad
-                    ? <p className="text-xs text-red-400 truncate" title={friendlyError(r.error)}>{friendlyError(r.error)}</p>
+                    ? <p className="text-xs text-danger truncate" title={friendlyError(r.error)}>{friendlyError(r.error)}</p>
                     : (
-                      <div className="mt-1 h-1 w-full bg-gray-700/60 rounded-full overflow-hidden" aria-hidden="true">
+                      <div className="mt-1 h-1 w-full bg-raised/60 rounded-full overflow-hidden" aria-hidden="true">
                         <div className={[
                           'h-full rounded-full transition-all duration-300 motion-reduce:transition-none',
-                          ok ? 'w-full bg-green-500' : 'w-2/3 bg-blue-500 animate-pulse motion-reduce:animate-none',
+                          ok ? 'w-full bg-success' : 'w-2/3 bg-primary animate-pulse motion-reduce:animate-none',
                         ].join(' ')} />
                       </div>
                     )}
                 </div>
                 <span className="shrink-0" title={READABLE_STATUS[r.status]} aria-label={READABLE_STATUS[r.status]}>
-                  {busy && <Loader2 className="w-4 h-4 text-blue-400 animate-spin motion-reduce:animate-none" />}
-                  {ok && <CheckCircle2 className="w-4 h-4 text-green-400" />}
-                  {bad && <XCircle className="w-4 h-4 text-red-400" />}
+                  {busy && <Loader2 className="w-4 h-4 text-primary animate-spin motion-reduce:animate-none" />}
+                  {ok && <CheckCircle2 className="w-4 h-4 text-success" />}
+                  {bad && <XCircle className="w-4 h-4 text-danger" />}
                 </span>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeRow(r.client_id); }}
                   aria-label={`Remove ${r.name}`}
-                  className="text-gray-500 hover:text-red-400 shrink-0 rounded p-0.5 focus-visible:ring-2 focus-visible:ring-blue-500/70 outline-none"
+                  className="text-muted hover:text-danger shrink-0 rounded p-0.5 focus-visible:ring-2 focus-visible:ring-focus/70 outline-none"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -346,14 +365,14 @@ export const DFileUpload: UIComponent = ({ node, onAction }) => {
       )}
 
       {view.length > 0 && (
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-muted">
           <span>
             {view.length} file{view.length > 1 ? 's' : ''} · {formatSize(totalReadable)}
-            {errored ? <span className="text-red-400"> · {errored} failed</span> : null}
+            {errored ? <span className="text-danger"> · {errored} failed</span> : null}
           </span>
           <button
             type="button" onClick={clearAll}
-            className="text-gray-500 hover:text-gray-300 rounded px-1 focus-visible:ring-2 focus-visible:ring-blue-500/70 outline-none"
+            className="text-muted hover:text-body rounded px-1 focus-visible:ring-2 focus-visible:ring-focus/70 outline-none"
           >
             Clear all
           </button>

@@ -1,97 +1,29 @@
 'use client';
-
-import React, { useContext, useEffect, useId, useState, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
-import type { UIComponent, UIAction } from '../types';
+import type { UIAction, UIComponent } from '../types';
+import { nodeIdentity, useSyncedState } from '../hooks';
+import { useUIAction } from '../ImperalUIProvider';
 import { FormContext } from './DForm';
+import { Field } from './primitives';
 
 export const DInput: UIComponent = ({ node, onAction }) => {
   const form = useContext(FormContext);
-  const {
-    placeholder = '',
-    on_submit,
-    param_name = 'value',
-    value: initValue = '',
-    label,
-    variant = 'default',
-    type = 'text',
-  } = node.props as {
-    placeholder?: string;
-    on_submit?: UIAction;
-    param_name?: string;
-    value?: string;
-    label?: string;
-    variant?: 'default' | 'ghost';
-    type?: 'text' | 'password' | 'email' | 'number' | 'url';
+  const { placeholder = '', on_submit, param_name = 'value', value: initial = '', label, description, error, required = false, disabled = false, readonly = false, variant = 'default', type = 'text' } = node.props as {
+    placeholder?: string; on_submit?: UIAction; param_name?: string; value?: string | number; label?: string; description?: string; error?: string; required?: boolean; disabled?: boolean; readonly?: boolean; variant?: 'default' | 'ghost'; type?: 'text'|'password'|'email'|'number'|'url'|'search'|'tel';
   };
-
-  const [localValue, setLocalValue] = useState(String(initValue));
+  const [localValue, setLocalValue] = useSyncedState(String(initial), nodeIdentity(node));
   const inputRef = useRef<HTMLInputElement>(null);
-  const inputId = useId();
-
-  useEffect(() => {
-    if (form && form.values[param_name] === undefined) form.setField(param_name, initValue);
-  }, [form, initValue, param_name]);
-
-  const value = form ? (form.values[param_name] ?? initValue) : localValue;
-
-  const setValue = (v: string) => {
-    if (form) {
-      form.setField(param_name, v);
-    } else {
-      setLocalValue(v);
-    }
+  const action = useUIAction(onAction);
+  useEffect(() => { if (form && form.values[param_name] === undefined) form.setField(param_name, initial); }, [form, initial, param_name]);
+  const value = form ? (form.values[param_name] ?? initial) : localValue;
+  const setValue = (next: string) => form ? form.setField(param_name, next) : setLocalValue(next);
+  const submit = async () => {
+    if (!String(value).trim() || !on_submit || form || disabled || readonly) return;
+    const ok = await action.run({ ...on_submit, params: { ...(on_submit.params ?? {}), [param_name]: String(value).trim() } });
+    if (ok) { setLocalValue(''); inputRef.current?.focus(); }
   };
-
-  const handleSubmit = () => {
-    if (!String(value).trim() || !on_submit || !onAction) return;
-    if (!form) {
-      const action: UIAction = {
-        ...on_submit,
-        params: { ...(on_submit.params || {}), [param_name]: String(value).trim() },
-      };
-      onAction(action);
-      setLocalValue('');
-      inputRef.current?.focus();
-    }
-  };
-
-  const isGhost = variant === 'ghost';
-
-  return (
-    <div className="flex flex-col gap-1 min-w-0">
-      {label && <label htmlFor={inputId} className="text-xs text-gray-400">{label}</label>}
-      <div className="flex items-center gap-1.5 min-w-0">
-        <input
-          ref={inputRef}
-          id={inputId}
-          type={type}
-          autoComplete={type === 'password' ? 'new-password' : undefined}
-          spellCheck={type === 'password' ? false : undefined}
-          value={String(value)}
-          onChange={e => setValue(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-          placeholder={placeholder}
-          className={[
-            'flex-1 min-w-0 rounded-md px-3 py-1.5 text-sm transition-colors',
-            'focus:outline-none focus:ring-1 focus:ring-blue-500/50',
-            'placeholder:text-gray-600',
-            isGhost
-              ? 'bg-transparent border border-transparent hover:border-gray-700/50 text-gray-200'
-              : 'bg-gray-800/60 border border-gray-700/50 text-gray-200',
-          ].join(' ')}
-        />
-        {!form && String(value).trim() && (
-          <button
-            type="button"
-            aria-label="Submit input"
-            onClick={handleSubmit}
-            className="flex-shrink-0 p-1.5 rounded-md text-blue-400 hover:bg-blue-500/20 transition-colors"
-          >
-            <Send size={14} aria-hidden="true" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
+  return <Field label={label} description={description} error={error ?? (action.error instanceof Error ? action.error.message : undefined)} required={required}>
+    {ids => <div className="flex min-w-0 items-center gap-2"><input ref={inputRef} id={ids.id} aria-describedby={[ids.descriptionId, ids.errorId].filter(Boolean).join(' ') || undefined} aria-invalid={Boolean(error || action.error)} type={type} required={required} disabled={disabled || action.pending} readOnly={readonly} autoComplete={type === 'password' ? 'new-password' : undefined} spellCheck={type === 'password' ? false : undefined} value={String(value)} onChange={event => setValue(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void submit(); } }} placeholder={placeholder} className={`${variant === 'ghost' ? 'control-base border-transparent bg-transparent' : 'control-base'} ${error ? 'control-error' : ''}`} />{!form && on_submit && <button type="button" aria-label="Submit input" onClick={() => void submit()} disabled={!String(value).trim() || disabled || readonly || action.pending} className="button-base min-h-11 min-w-11 bg-primary px-3 text-on-primary"><Send aria-hidden="true" className="size-4" /></button>}</div>}
+  </Field>;
 };

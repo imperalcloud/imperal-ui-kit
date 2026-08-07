@@ -4,6 +4,9 @@ import { registerAllComponents } from './register-all';
 registerAllComponents();
 
 export { DeclarativeRenderer, renderChildren, useOnConfirm, OnConfirmContext } from './DeclarativeRenderer';
+export type { DeclarativeRendererProps } from './DeclarativeRenderer';
+export { ImperalUIProvider, ImperalUIRoot, useImperalUI, useUIAction } from './ImperalUIProvider';
+export type { ImperalUIProviderProps, ImperalUIConfig, ImperalMessages, ImperalTheme, ImperalDirection } from './ImperalUIProvider';
 export type { OnConfirmFn } from './DeclarativeRenderer';
 export { registerComponent, getComponent, hasComponent, listRegistered } from './registry';
 export { registerAllComponents } from './register-all';
@@ -63,3 +66,5 @@ export { DToggle } from './components/DToggle';
 export { DTooltip } from './components/DTooltip';
 export { DTree } from './components/DTree';
 export { DVideo } from './components/DVideo';
+export { Field, InlineError, Skeleton, ActionProgress, ToastProvider, useToast } from './components/primitives';
+export type { FieldProps } from './components/primitives';

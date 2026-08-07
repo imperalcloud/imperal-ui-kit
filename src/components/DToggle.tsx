@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
+import { nodeIdentity, useSyncedState } from '../hooks';
 
 /**
  * Coerce a value to boolean — handles string "true"/"false" from form defaults.
@@ -30,7 +31,7 @@ export const DToggle: UIComponent = ({ node, onAction }) => {
     param_name?: string;
   };
 
-  const [localValue, setLocalValue] = useState(toBool(initValue));
+  const [localValue, setLocalValue] = useSyncedState(toBool(initValue), nodeIdentity(node));
   // GAP-2: register initial value with the form so unchanged toggles still
   // appear in submit payload (previously "unticked" => key missing => server
   // treated as undefined instead of false).
@@ -63,8 +64,8 @@ export const DToggle: UIComponent = ({ node, onAction }) => {
         role="switch"
         aria-checked={checked}
         aria-label={label || param_name}
-        className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
-          checked ? 'bg-blue-600' : 'bg-gray-700'
+        className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-focus/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+          checked ? 'bg-primary' : 'bg-raised'
         }`}
       >
         <span
@@ -74,7 +75,7 @@ export const DToggle: UIComponent = ({ node, onAction }) => {
           }`}
         />
       </button>
-      {label && <span className="text-sm text-gray-300">{label}</span>}
+      {label && <span className="text-sm text-body">{label}</span>}
     </div>
   );
 };

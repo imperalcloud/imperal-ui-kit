@@ -7,9 +7,9 @@ import type { UIComponent } from '../types';
 type TrendDirection = 'up' | 'down' | 'neutral';
 
 const TREND_COLORS: Record<TrendDirection, string> = {
-  up: 'text-green-400',
-  down: 'text-red-400',
-  neutral: 'text-gray-500',
+  up: 'text-success',
+  down: 'text-danger',
+  neutral: 'text-muted',
 };
 
 const TREND_ICONS = {
@@ -26,7 +26,6 @@ export const DStat: UIComponent = ({ node }) => {
     trend_direction = 'neutral',
     description,
     icon,
-    color,
   } = node.props as {
     label?: string;
     value?: string | number;
@@ -34,7 +33,6 @@ export const DStat: UIComponent = ({ node }) => {
     trend_direction?: TrendDirection;
     description?: string;
     icon?: string;
-    color?: string;
   };
 
   const trendColor = TREND_COLORS[trend_direction] ?? TREND_COLORS.neutral;
@@ -44,19 +42,19 @@ export const DStat: UIComponent = ({ node }) => {
   const IconComponent = icon ? (icons[icon as keyof typeof icons] ?? null) : null;
 
   return (
-    <div className="bg-gray-800/40 border border-gray-800/50 rounded-lg p-4 flex flex-col gap-2">
+    <div className="bg-card/40 border border-hair/50 rounded-lg p-4 flex flex-col gap-2">
       {/* Label row */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+        <span className="text-xs font-medium text-muted uppercase tracking-wide">
           {label}
         </span>
         {IconComponent && (
-          <IconComponent className="w-4 h-4 text-gray-500" />
+          <IconComponent className="w-4 h-4 text-muted" />
         )}
       </div>
 
       {/* Value */}
-      <div className="text-2xl font-bold text-white leading-none">
+      <div className="text-2xl font-bold text-body leading-none">
         {value}
       </div>
 
@@ -69,7 +67,7 @@ export const DStat: UIComponent = ({ node }) => {
           </span>
         )}
         {description && (
-          <span className="text-xs text-gray-500 truncate">{description}</span>
+          <span className="text-xs text-muted truncate">{description}</span>
         )}
       </div>
     </div>

@@ -65,7 +65,7 @@ export const Stack: UIComponent = ({ node, onAction }) => {
     align ? (ALIGN_MAP[align] ?? '') : '',
     justify ? (JUSTIFY_MAP[justify] ?? '') : '',
     shouldWrap ? 'flex-wrap' : '',
-    sticky ? 'sticky top-0 z-10 bg-gray-950' : '',
+    sticky ? 'sticky top-0 z-10 bg-app' : '',
     extraClass || defaultPadding,
   ]
     .filter(Boolean)

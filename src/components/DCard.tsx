@@ -26,11 +26,20 @@ export const DCard: UIComponent = ({ node, onAction }) => {
   };
 
   const isClickable = !!on_click;
-  const handleClick = () => { if (on_click && onAction) onAction(on_click); };
+  const isNestedInteractive = (target: EventTarget | null, currentTarget: EventTarget | null) => {
+    const element = target instanceof Element ? target : null;
+    const root = currentTarget instanceof Element ? currentTarget : null;
+    if (!element || !root || element === root) return false;
+    return Boolean(element.closest('a,button,input,select,textarea,summary,[role="button"],[role="link"],[role="menuitem"],[tabindex]:not([tabindex="-1"])'));
+  };
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (isNestedInteractive(event.target, event.currentTarget)) return;
+    if (on_click && onAction) void onAction(on_click);
+  };
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!isClickable || (event.key !== 'Enter' && event.key !== ' ')) return;
+    if (!isClickable || isNestedInteractive(event.target, event.currentTarget) || (event.key !== 'Enter' && event.key !== ' ')) return;
     event.preventDefault();
-    handleClick();
+    if (on_click && onAction) void onAction(on_click);
   };
 
   const normalizeNodes = (val: UINode | UINode[] | undefined): UINode[] | undefined => {

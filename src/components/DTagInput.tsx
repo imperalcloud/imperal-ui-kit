@@ -4,6 +4,7 @@ import React, { useContext, useState, useRef, useEffect, useMemo } from 'react';
 import { X } from 'lucide-react';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
+import { nodeIdentity, useSyncedState } from '../hooks';
 
 interface DTagInputProps {
   values?: string[];
@@ -49,8 +50,8 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
     try { return new RegExp(validate); } catch { return null; }
   }, [validate]);
 
-  const initValues = Array.isArray(rawInitValues) ? rawInitValues : rawInitValues ? [String(rawInitValues)] : [];
-  const [localValues, setLocalValues] = useState<string[]>(initValues);
+  const initValues = useMemo(() => Array.isArray(rawInitValues) ? rawInitValues : rawInitValues ? [String(rawInitValues)] : [], [rawInitValues]);
+  const [localValues, setLocalValues] = useSyncedState<string[]>(initValues, nodeIdentity(node));
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -154,20 +155,20 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
   return (
     <div ref={containerRef} className="relative">
       <div
-        className="min-h-[40px] w-full bg-gray-900 border border-gray-700 rounded-md px-2 py-1.5 flex flex-wrap gap-1 items-center cursor-text focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500"
-        onClick={() => inputRef.current?.focus()}
+        className="min-h-[2.75rem] w-full bg-panel border border-default rounded-md px-2 py-1.5 flex flex-wrap gap-1 items-center cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-focus"
+        role="group"
       >
         {selected.map(tag => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-900/50 text-blue-300 text-xs rounded-full"
+            className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/50 text-primary text-xs rounded-full"
           >
             {tag}
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
               aria-label={`Remove ${tag}`}
-              className="hover:text-blue-100 focus:outline-none"
+              className="hover:text-on-primary focus:outline-none"
             >
               <X className="w-3 h-3" />
             </button>
@@ -182,16 +183,16 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={selected.length === 0 ? placeholder : ''}
-          className="flex-1 min-w-[80px] bg-transparent text-sm text-white placeholder-gray-500 outline-none"
+          className="flex-1 min-w-[5rem] bg-transparent text-sm text-body placeholder:text-subtle outline-none"
         />
       </div>
 
       {isOpen && filteredSuggestions.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full bg-gray-900 border border-gray-700 rounded-md shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full bg-panel border border-default rounded-md shadow-lg max-h-48 overflow-y-auto">
           {useGroups ? (
             Object.entries(groups).map(([group, items]) => (
               <div key={group}>
-                <div className="px-3 py-1 text-xs text-gray-500 uppercase tracking-wider font-medium bg-gray-800/50">
+                <div className="px-3 py-1 text-xs text-muted uppercase tracking-wider font-medium bg-card/50">
                   {group}
                 </div>
                 {items.map(s => (
@@ -199,7 +200,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
                     key={s}
                     type="button"
                     onMouseDown={(e) => { e.preventDefault(); addTag(s); }}
-                    className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-gray-700 focus:outline-none"
+                    className="w-full text-left px-3 py-1.5 text-sm text-body hover:bg-raised focus:outline-none"
                   >
                     {s}
                   </button>
@@ -212,7 +213,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
                 key={s}
                 type="button"
                 onMouseDown={(e) => { e.preventDefault(); addTag(s); }}
-                className="w-full text-left px-3 py-1.5 text-sm text-white hover:bg-gray-700 focus:outline-none"
+                className="w-full text-left px-3 py-1.5 text-sm text-body hover:bg-raised focus:outline-none"
               >
                 {s}
               </button>
@@ -222,7 +223,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
       )}
       {validateError && validate_message && (
         /* validate_error_msg_marker */
-        <div className="text-xs text-red-400 mt-1 px-1">{validate_message}</div>
+        <div className="text-xs text-danger mt-1 px-1">{validate_message}</div>
       )}
     </div>
   );

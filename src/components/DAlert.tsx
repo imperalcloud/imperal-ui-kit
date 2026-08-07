@@ -11,13 +11,13 @@ const VARIANT_STYLES: Record<
   { container: string; icon: string; IconComp: React.FC<{ className?: string }> }
 > = {
   info: {
-    container: 'bg-blue-500/10 border-blue-500/20 text-blue-300',
-    icon: 'text-blue-400',
+    container: 'bg-primary/10 border-primary/20 text-primary',
+    icon: 'text-primary',
     IconComp: Info,
   },
   success: {
-    container: 'bg-green-500/10 border-green-500/20 text-green-300',
-    icon: 'text-green-400',
+    container: 'bg-success/10 border-success/20 text-success',
+    icon: 'text-success',
     IconComp: CheckCircle2,
   },
   warn: {
@@ -26,8 +26,8 @@ const VARIANT_STYLES: Record<
     IconComp: AlertTriangle,
   },
   error: {
-    container: 'bg-red-500/10 border-red-500/20 text-red-300',
-    icon: 'text-red-400',
+    container: 'bg-danger/10 border-danger/20 text-danger',
+    icon: 'text-danger',
     IconComp: XCircle,
   },
 };

@@ -7,11 +7,11 @@ type ProgressVariant = 'bar' | 'circular';
 type ProgressColor = 'blue' | 'green' | 'red' | 'yellow' | 'purple';
 
 const BAR_COLOR_CLASSES: Record<ProgressColor, string> = {
-  blue: 'bg-blue-500',
-  green: 'bg-green-500',
-  red: 'bg-red-500',
+  blue: 'bg-primary',
+  green: 'bg-success',
+  red: 'bg-danger',
   yellow: 'bg-yellow-500',
-  purple: 'bg-purple-500',
+  purple: 'bg-accent',
 };
 
 export const DProgress: UIComponent = ({ node }) => {
@@ -48,13 +48,13 @@ export const DProgress: UIComponent = ({ node }) => {
     <div className="flex flex-col gap-1.5">
       {(label || show_value) && (
         <div className="flex items-center justify-between">
-          {label && <span className="text-xs text-gray-400">{label}</span>}
+          {label && <span className="text-xs text-muted">{label}</span>}
           {show_value && (
-            <span className="text-xs text-gray-500">{Math.round(pct)}%</span>
+            <span className="text-xs text-muted">{Math.round(pct)}%</span>
           )}
         </div>
       )}
-      <div role="progressbar" aria-label={label || 'Progress'} aria-valuemin={0} aria-valuemax={safeMax} aria-valuenow={Math.min(safeMax, Math.max(0, safeValue))} className={`w-full bg-gray-800/60 rounded-full overflow-hidden ${heightClass}`}>
+      <div role="progressbar" aria-label={label || 'Progress'} aria-valuemin={0} aria-valuemax={safeMax} aria-valuenow={Math.min(safeMax, Math.max(0, safeValue))} className={`w-full bg-card/60 rounded-full overflow-hidden ${heightClass}`}>
         <div
           className={`${heightClass} ${barColor} rounded-full transition-all duration-500`}
           style={{ width: `${pct}%` }}
@@ -119,11 +119,11 @@ function CircularProgress({ value, color, label, show_value, size = 'md' }: Circ
         </svg>
         {show_value && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs font-semibold text-white">{Math.round(value)}%</span>
+            <span className="text-xs font-semibold text-body">{Math.round(value)}%</span>
           </div>
         )}
       </div>
-      {label && <span className="text-xs text-gray-400">{label}</span>}
+      {label && <span className="text-xs text-muted">{label}</span>}
     </div>
   );
 }

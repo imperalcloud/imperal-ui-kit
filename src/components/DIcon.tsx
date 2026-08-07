@@ -34,7 +34,6 @@ export const DIcon: UIComponent = ({ node }) => {
   };
 
   const pascalName = toPascalCase(name);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (LucideIcons as any)[pascalName] as React.FC<{
     size?: number;
     color?: string;
@@ -45,7 +44,7 @@ export const DIcon: UIComponent = ({ node }) => {
     // Fallback: render a small placeholder square
     return (
       <span
-        className={`inline-block w-4 h-4 rounded bg-gray-700/50 ${extraClass ?? ''}`}
+        className={`inline-block w-4 h-4 rounded bg-raised/50 ${extraClass ?? ''}`}
         title={`Icon "${name}" not found`}
       />
     );

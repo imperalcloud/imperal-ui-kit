@@ -8,12 +8,12 @@ export const DEmpty: UIComponent = ({ node, onAction }) => {
   const IconComp = icon ? (LucideIcons as any)[icon] || InboxIcon : InboxIcon;
   return (
     <div className="flex flex-col items-center justify-center py-8 text-center">
-      <IconComp className="w-10 h-10 text-gray-600 mb-3" />
-      <p className="text-sm text-gray-500">{message}</p>
+      <IconComp className="w-10 h-10 text-subtle mb-3" />
+      <p className="text-sm text-muted">{message}</p>
       {action && onAction && (
         <button
           onClick={() => onAction(action)}
-          className="mt-3 px-3 py-1.5 text-xs text-blue-400 border border-blue-800 rounded-md hover:bg-blue-900/30"
+          className="mt-3 px-3 py-1.5 text-xs text-primary border border-primary rounded-md hover:bg-primary/30"
         >
           {action.params?.label || 'Try again'}
         </button>

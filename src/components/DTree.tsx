@@ -12,7 +12,7 @@ function TreeNode({ node, depth, onAction }: { node: any; depth: number; onActio
     <div>
       <button
         onClick={() => hasChildren ? setExpanded(!expanded) : node.on_click && onAction?.(node.on_click)}
-        className="flex items-center gap-1.5 w-full py-1 px-1 text-sm text-gray-300 hover:text-white hover:bg-gray-800/50 rounded"
+        className="flex items-center gap-1.5 w-full py-1 px-1 text-sm text-body hover:text-body hover:bg-card rounded"
         style={{ paddingLeft: `${depth * 16 + 4}px` }}
       >
         {hasChildren ? (
@@ -20,7 +20,7 @@ function TreeNode({ node, depth, onAction }: { node: any; depth: number; onActio
         ) : (
           <span className="w-3.5" />
         )}
-        {hasChildren ? <Folder className="w-3.5 h-3.5 text-yellow-500" /> : <File className="w-3.5 h-3.5 text-gray-500" />}
+        {hasChildren ? <Folder className="w-3.5 h-3.5 text-yellow-500" /> : <File className="w-3.5 h-3.5 text-muted" />}
         <span>{node.label}</span>
       </button>
       {expanded && hasChildren && node.children.map((child: any, i: number) => (

@@ -1,80 +1,16 @@
 'use client';
-
-import React, { useContext, useId, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import type { UIComponent, UIAction } from '../types';
+import React, { useContext, useEffect } from 'react';
+import type { UIAction, UIComponent } from '../types';
+import { nodeIdentity, useSyncedState } from '../hooks';
+import { useUIAction } from '../ImperalUIProvider';
 import { FormContext } from './DForm';
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
+import { Field } from './primitives';
+interface Option { value: string; label: string; disabled?: boolean }
 export const DSelect: UIComponent = ({ node, onAction }) => {
-  const form = useContext(FormContext);
-  const {
-    options = [],
-    value: initValue = '',
-    placeholder = 'Select...',
-    on_change,
-    param_name = 'value',
-    label,
-  } = node.props as {
-    options?: SelectOption[];
-    value?: string;
-    placeholder?: string;
-    on_change?: UIAction;
-    param_name?: string;
-    label?: string;
-  };
-
-  const [localValue, setLocalValue] = useState(initValue);
-  const selectId = useId();
-  // GAP-2: register initial value with the form so selects that user doesn't
-  // touch still appear in submit payload.
-  React.useEffect(() => {
-    if (form && form.values[param_name] === undefined && initValue !== undefined) {
-      form.setField(param_name, initValue);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const currentValue = String(form ? (form.values[param_name] ?? initValue) : localValue);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const v = e.target.value;
-    if (form) {
-      form.setField(param_name, v);
-    } else {
-      setLocalValue(v);
-    }
-    if (on_change && onAction) {
-      onAction({ ...on_change, params: { ...(on_change.params || {}), [param_name]: v } });
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-1 min-w-0">
-      {label && <label htmlFor={selectId} className="text-xs text-gray-400">{label}</label>}
-      <div className="relative min-w-0">
-        <select
-          id={selectId}
-          value={currentValue}
-          onChange={handleChange}
-          className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm text-white appearance-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-        >
-          {placeholder && (
-            <option value="" disabled>
-              {placeholder}
-            </option>
-          )}
-          {options.map(o => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-        <ChevronDown aria-hidden="true" className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
-      </div>
-    </div>
-  );
+  const form = useContext(FormContext); const action = useUIAction(onAction);
+  const { options = [], value: initial = '', placeholder = 'Select…', on_change, param_name = 'value', label, description, error, required = false, disabled = false } = node.props as { options?: Option[]; value?: string; placeholder?: string; on_change?: UIAction; param_name?: string; label?: string; description?: string; error?: string; required?: boolean; disabled?: boolean };
+  const [local, setLocal] = useSyncedState(initial, nodeIdentity(node));
+  useEffect(() => { if (form && form.values[param_name] === undefined) form.setField(param_name, initial); }, [form, initial, param_name]);
+  const value = String(form ? (form.values[param_name] ?? initial) : local);
+  return <Field label={label} description={description} error={error ?? (action.error instanceof Error ? action.error.message : undefined)} required={required}>{ids => <select id={ids.id} aria-describedby={[ids.descriptionId, ids.errorId].filter(Boolean).join(' ') || undefined} aria-invalid={Boolean(error || action.error)} required={required} disabled={disabled || action.pending} value={value} onChange={event => { const next=event.target.value; if (form) form.setField(param_name, next); else setLocal(next); if(on_change) void action.run({...on_change,params:{...(on_change.params??{}),[param_name]:next}}); }} className={`control-base appearance-none ${error ? 'control-error' : ''}`}>{placeholder && <option value="" disabled>{placeholder}</option>}{options.map(option => <option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}</select>}</Field>;
 };

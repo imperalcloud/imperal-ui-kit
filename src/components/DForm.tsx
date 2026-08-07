@@ -4,6 +4,9 @@ import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type { UIComponent, UIAction, UINode } from '../types';
 import { renderChildren, useOnConfirm } from '../DeclarativeRenderer';
+import { nodeIdentity } from '../hooks';
+import { useImperalUI } from '../ImperalUIProvider';
+import { InlineError } from './primitives';
 
 export interface FormContextValue {
   values: Record<string, unknown>;
@@ -29,10 +32,19 @@ export const DForm: UIComponent = ({ node, onAction }) => {
 
   const [values, setValues] = useState<Record<string, unknown>>(defaults);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<unknown>(null);
+  const ui = useImperalUI();
   const mounted = useRef(true);
+  const resetSignature = `${nodeIdentity(node)}:${JSON.stringify(defaults)}`;
+  const previousResetSignature = useRef(resetSignature);
   const onConfirm = useOnConfirm();
 
   useEffect(() => () => { mounted.current = false; }, []);
+  useEffect(() => {
+    if (previousResetSignature.current === resetSignature) return;
+    previousResetSignature.current = resetSignature;
+    setValues(defaults);
+  }, [defaults, resetSignature]);
 
   const setField = useCallback((key: string, value: unknown) => {
     setValues(previous => ({ ...previous, [key]: value }));
@@ -43,6 +55,7 @@ export const DForm: UIComponent = ({ node, onAction }) => {
     if (!action || !onAction || submitting) return;
 
     setSubmitting(true);
+    setSubmitError(null);
     try {
       if (confirm && !(await onConfirm(confirm))) return;
       const submitAction: UIAction = {
@@ -51,6 +64,9 @@ export const DForm: UIComponent = ({ node, onAction }) => {
         params: values,
       };
       await Promise.resolve(onAction(submitAction));
+    } catch (error) {
+      setSubmitError(error);
+      ui.onError?.(error, { action: { action: 'call', function: action, params: values } });
     } finally {
       if (mounted.current) setSubmitting(false);
     }
@@ -60,13 +76,14 @@ export const DForm: UIComponent = ({ node, onAction }) => {
     <FormContext.Provider value={{ values, setField }}>
       <form className="space-y-3" onSubmit={handleSubmit}>
         {renderChildren(children, onAction)}
+        {Boolean(submitError) && <InlineError>{submitError instanceof Error ? submitError.message : ui.messages.sectionFailed}</InlineError>}
         <button
           type="submit"
           disabled={submitting || !action || !onAction}
           aria-busy={submitting}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="button-base bg-primary text-sm text-on-primary"
         >
-          {submitting ? 'Submitting…' : submit_label}
+          {submitting ? ui.messages.submitting : (submit_label || ui.messages.submit)}
         </button>
       </form>
     </FormContext.Provider>

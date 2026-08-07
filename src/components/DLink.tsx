@@ -35,7 +35,7 @@ export const DLink: UIComponent = ({ node, onAction }) => {
     <a
       href={resolvedHref || '#'}
       onClick={handleClick}
-      className="text-sm text-blue-400 hover:text-blue-300 underline underline-offset-2 focus-ring"
+      className="text-sm text-primary hover:text-primary underline underline-offset-2 focus-ring"
     >
       {label}
     </a>

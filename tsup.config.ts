@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/index.ts', 'src/provider.ts', 'src/types-public.ts', 'src/lazy.tsx'],
   format: ['esm'],
   dts: true,
   external: [
@@ -21,10 +21,11 @@ export default defineConfig({
     'react-syntax-highlighter/dist/cjs/prism',
     'react-syntax-highlighter/dist/cjs/styles/prism/one-dark',
     'dompurify',
+    'isomorphic-dompurify',
     'lucide-react',
     'tailwind-merge',
   ],
   treeshake: true,
   clean: true,
-  splitting: false,
+  splitting: true,
 });

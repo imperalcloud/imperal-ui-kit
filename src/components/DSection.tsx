@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { nodeIdentity } from '../hooks';
 import { ChevronRight } from 'lucide-react';
 import type { UIComponent, UINode } from '../types';
 import { renderChildren } from '../DeclarativeRenderer';
@@ -13,6 +14,8 @@ export const DSection: UIComponent = ({ node, onAction }) => {
     collapsible?: boolean;
   };
   const [open, setOpen] = useState(true);
+  const identity = nodeIdentity(node);
+  useEffect(() => setOpen(true), [identity]);
   const contentId = useId();
 
   return (

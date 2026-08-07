@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { UIComponent } from '../types';
 
 export const DVideo: UIComponent = ({ node }) => {
@@ -11,10 +11,11 @@ export const DVideo: UIComponent = ({ node }) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState(false);
+  useEffect(() => setError(false), [src]);
 
   if (!src) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6 text-sm text-gray-500 text-center">
+      <div className="bg-card rounded-lg p-6 text-sm text-muted text-center">
         No video source
       </div>
     );
@@ -22,7 +23,7 @@ export const DVideo: UIComponent = ({ node }) => {
 
   if (error) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6 text-sm text-gray-500 text-center">
+      <div className="bg-card rounded-lg p-6 text-sm text-muted text-center">
         Video unavailable
       </div>
     );
@@ -32,10 +33,11 @@ export const DVideo: UIComponent = ({ node }) => {
 
   return (
     <div className="flex flex-col gap-1.5">
-      {title && <p className="text-sm font-medium text-gray-300">{title}</p>}
+      {title && <p className="text-sm font-medium text-body">{title}</p>}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
         ref={videoRef}
-        src={isHLS ? undefined : src}
+        src={src}
         poster={poster || undefined}
         controls={controls}
         autoPlay={autoplay}
@@ -51,12 +53,8 @@ export const DVideo: UIComponent = ({ node }) => {
         }}
         className="rounded-lg bg-black object-contain"
       >
-        {isHLS ? null : (
-          <>
-            <source src={src} />
-            Your browser does not support the video tag.
-          </>
-        )}
+        <source src={src} type={isHLS ? 'application/vnd.apple.mpegurl' : undefined} />
+        Your browser does not support the video tag.
       </video>
     </div>
   );

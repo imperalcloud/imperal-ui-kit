@@ -50,11 +50,11 @@ function SelectCheckbox({ checked, onChange, className = '' }:
       aria-checked={checked}
       aria-label={checked ? 'Deselect item' : 'Select item'}
       onClick={e => { e.stopPropagation(); onChange(); }}
-      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500/70 ${
-        checked ? 'bg-blue-500 border-blue-500' : 'border-gray-600 hover:border-gray-400'
+      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus-visible:ring-2 focus-visible:ring-focus/70 ${
+        checked ? 'bg-primary border-primary' : 'border-strong hover:border-strong'
       } ${className}`}
     >
-      {checked && <Check aria-hidden="true" size={10} className="text-white" strokeWidth={3} />}
+      {checked && <Check aria-hidden="true" size={10} className="text-body" strokeWidth={3} />}
     </button>
   );
 }
@@ -129,9 +129,9 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
       onDragLeave={item.droppable ? handleDragLeave : undefined}
       onDrop={item.droppable ? handleDrop : undefined}
       className={[
-        'border-b border-gray-800/50 transition-all relative select-none',
-        item.selected || isSelected ? 'bg-blue-600/10 border-l-2 border-l-blue-500' : '',
-        dragOver ? 'bg-blue-600/20 ring-1 ring-blue-500/50' : '',
+        'border-b border-hair/50 transition-all relative select-none',
+        item.selected || isSelected ? 'bg-primary/10 border-l-2 border-l-blue-500' : '',
+        dragOver ? 'bg-primary/20 ring-1 ring-focus/50' : '',
         item.draggable ? 'cursor-grab active:cursor-grabbing' : '',
       ].join(' ')}
     >
@@ -145,7 +145,7 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
         aria-expanded={isExpandable ? expanded : undefined}
         className={[
           'group row-pad',
-          isClickable ? 'cursor-pointer hover:bg-gray-800/60' : '',
+          isClickable ? 'cursor-pointer hover:bg-card' : '',
         ].join(' ')}
       >
         <div className="flex items-center gap-2">
@@ -156,30 +156,30 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
           )}
 
           {selectable && item.badge && !hasSelection && (
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0 group-hover:opacity-0 transition-opacity" />
+            <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 group-hover:opacity-0 transition-opacity" />
           )}
 
           {isExpandable && (
             <ChevronRight
               size={14}
-              className={`flex-shrink-0 text-gray-500 transition-transform ${expanded ? 'rotate-90' : ''}`}
+              className={`flex-shrink-0 text-muted transition-transform ${expanded ? 'rotate-90' : ''}`}
             />
           )}
 
-          {ItemIcon && <ItemIcon size={14} className="flex-shrink-0 text-gray-500" />}
+          {ItemIcon && <ItemIcon size={14} className="flex-shrink-0 text-muted" />}
 
           {item.avatar && <DeclarativeRenderer node={item.avatar as UINode} onAction={onAction} />}
 
           <div className="flex-1 min-w-0">
-            <p className={`text-xs truncate ${item.selected || isSelected ? 'font-semibold text-white' : item.badge ? 'font-semibold text-white' : 'font-normal text-gray-300'}`}>
+            <p className={`text-xs truncate ${item.selected || isSelected ? 'font-semibold text-body' : item.badge ? 'font-semibold text-body' : 'font-normal text-body'}`}>
               {item.title}
               {!selectable && item.badge && <> <DeclarativeRenderer node={item.badge as UINode} onAction={onAction} /></>}
             </p>
-            {item.subtitle && <p className="text-xs text-gray-500 truncate mt-0.5">{item.subtitle}</p>}
+            {item.subtitle && <p className="text-xs text-muted truncate mt-0.5">{item.subtitle}</p>}
           </div>
 
           {item.meta && (
-            <span className={`text-xs text-gray-500 whitespace-nowrap flex-shrink-0 ${actions.length > 0 ? 'group-hover:hidden' : ''}`}>
+            <span className={`text-xs text-muted whitespace-nowrap flex-shrink-0 ${actions.length > 0 ? 'group-hover:hidden' : ''}`}>
               {item.meta}
             </span>
           )}
@@ -190,7 +190,7 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
                 const Icon = icons[act.icon as keyof typeof icons] ?? icons.Circle;
                 return (
                   <button key={i} onClick={e => { void handleHoverAction(e, act); }} title={act.label || act.icon}
-                    className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                    className="p-1 rounded text-subtle hover:text-danger hover:bg-danger/10 transition-colors">
                     <Icon size={14} />
                   </button>
                 );
@@ -201,7 +201,7 @@ function DListItem({ item, onAction, selectable, isSelected, hasSelection, onTog
       </div>
 
       {expanded && expandedNodes.length > 0 && (
-        <div className="px-3 py-2 border-t border-gray-800/30 bg-gray-900/30">
+        <div className="px-3 py-2 border-t border-hair/30 bg-panel/30">
           {renderChildren(expandedNodes, onAction)}
         </div>
       )}
@@ -218,10 +218,10 @@ function BulkActionBar({ selectedCount, totalCount, onSelectAll, onClear, bulkAc
   const allSelected = selectedCount === totalCount && totalCount > 0;
 
   return (
-    <div className="sticky top-0 z-10 px-3 py-2 border-b border-blue-900/30 bg-gray-950 flex-shrink-0">
+    <div className="sticky top-0 z-10 px-3 py-2 border-b border-primary/30 bg-app flex-shrink-0">
       <div className="flex items-center gap-2 min-w-0">
         <button onClick={onSelectAll}
-          className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors flex-shrink-0">
+          className="flex items-center gap-1.5 text-xs text-primary hover:text-primary transition-colors flex-shrink-0">
           <SelectCheckbox checked={allSelected} onChange={onSelectAll} />
           <span className="font-medium tabular-nums">{allSelected ? 'All' : selectedCount.toString()}</span>
         </button>
@@ -230,7 +230,7 @@ function BulkActionBar({ selectedCount, totalCount, onSelectAll, onClear, bulkAc
             const Icon = ba.icon ? (icons[ba.icon as keyof typeof icons] ?? null) : null;
             return (
               <button key={i} onClick={() => onBulkAction(ba.action)} title={ba.label}
-                className="text-[11px] px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-md transition-colors flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+                className="text-[.6875rem] px-2 py-1 bg-card hover:bg-raised text-body hover:text-body rounded-md transition-colors flex items-center gap-1 whitespace-nowrap flex-shrink-0">
                 {Icon && <Icon size={12} />}
                 {ba.label}
               </button>
@@ -238,7 +238,7 @@ function BulkActionBar({ selectedCount, totalCount, onSelectAll, onClear, bulkAc
           })}
         </div>
         <button onClick={onClear} title="Clear selection"
-          className="text-gray-600 hover:text-gray-400 transition-colors flex-shrink-0 p-0.5 rounded hover:bg-gray-800">
+          className="text-subtle hover:text-muted transition-colors flex-shrink-0 p-0.5 rounded hover:bg-card">
           <X size={14} />
         </button>
       </div>
@@ -362,12 +362,12 @@ export const DList: UIComponent = ({ node, onAction }) => {
     <div className={`flex flex-col ${max_height ? "flex-shrink-0" : "flex-1 min-h-0"}`}>
       {/* System search bar */}
       {searchable && (
-        <div className="sticky top-0 z-[5] bg-gray-950 px-3 pt-2.5 pb-2 flex-shrink-0">
+        <div className="sticky top-0 z-[5] bg-app px-3 pt-2.5 pb-2 flex-shrink-0">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
             <input type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder={search_placeholder}
-              className="w-full bg-gray-800/60 border border-gray-700/50 rounded-md pl-8 pr-3 py-1.5 text-xs text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-colors" />
+              className="w-full bg-card/60 border border-default/50 rounded-md pl-8 pr-3 py-1.5 text-xs text-body placeholder:text-subtle focus:outline-none focus:border-primary/50 transition-colors" />
           </div>
         </div>
       )}
@@ -375,7 +375,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
       {/* Title */}
       {title && (
         <div className="px-3 pb-1 flex-shrink-0">
-          <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">{title}</span>
+          <span className="text-[.625rem] font-medium text-muted uppercase tracking-wider">{title}</span>
         </div>
       )}
 
@@ -395,7 +395,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
       <div className="flex-1 flex flex-col overflow-y-auto min-h-0"
         style={max_height ? { maxHeight: max_height } : undefined}>
         {displayItems.length === 0 ? (
-          <div className="text-center py-6 text-xs text-gray-600">{empty_text}</div>
+          <div className="text-center py-6 text-xs text-subtle">{empty_text}</div>
         ) : (
           displayItems.map((item: any, index: number) => {
             const previous = displayItems[index - 1];
@@ -403,7 +403,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
             const showGroup = grouped_by && (!previous || String(previous[grouped_by] ?? '') !== group);
             return (
               <React.Fragment key={item.id ?? index}>
-                {showGroup && <div className="px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-gray-500 bg-gray-900/60">{group || 'Other'}</div>}
+                {showGroup && <div className="px-3 py-1 text-[.625rem] font-medium uppercase tracking-wider text-muted bg-panel/60">{group || 'Other'}</div>}
                 <DListItem
                   item={item}
                   onAction={onAction}
@@ -422,7 +422,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
 
       {/* System paginator — sticky bottom, always visible */}
       {paginated && filtered.length > page_size && (
-        <div className="mt-auto sticky bottom-0 z-10 bg-gray-950 border-t border-gray-800/30 flex-shrink-0">
+        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t border-hair/30 flex-shrink-0">
           <Paginator page={currentPage} totalPages={totalPages} totalItems={filtered.length}
             onPageChange={p => setCurrentPage(Math.max(1, Math.min(p, totalPages)))} />
         </div>
@@ -430,7 +430,7 @@ export const DList: UIComponent = ({ node, onAction }) => {
 
       {/* Footer paginator — total items + extra info (for infinite scroll lists) */}
       {!paginated && showFooterPaginator && (
-        <div className="mt-auto sticky bottom-0 z-10 bg-gray-950 border-t border-gray-800/30 flex-shrink-0">
+        <div className="mt-auto sticky bottom-0 z-10 bg-app border-t border-hair/30 flex-shrink-0">
           <Paginator
             page={1}
             totalPages={on_end_reached ? 2 : 1}

@@ -151,11 +151,11 @@ export const DBulkUpload: UIComponent = ({ node }) => {
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
-        className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 ${dragOver ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-500'}`}
+        className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus/70 ${dragOver ? 'border-primary bg-primary/10' : 'border-default hover:border-strong'}`}
       >
-        <Upload className="w-7 h-7 text-gray-500 mx-auto mb-1.5" />
-        <p className="text-sm text-gray-300">Drop files or click to add — hundreds or thousands at once</p>
-        <p className="text-xs text-gray-600 mt-0.5">Each file streams directly; no per-batch size limit</p>
+        <Upload className="w-7 h-7 text-muted mx-auto mb-1.5" />
+        <p className="text-sm text-body">Drop files or click to add — hundreds or thousands at once</p>
+        <p className="text-xs text-subtle mt-0.5">Each file streams directly; no per-batch size limit</p>
       </div>
 
       <input ref={fileRef} type="file" accept={accept} multiple className="hidden"
@@ -169,25 +169,25 @@ export const DBulkUpload: UIComponent = ({ node }) => {
 
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={startAll} disabled={running || (!queued && !failed)}
-                className="px-3 py-1.5 rounded-md text-sm bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white inline-flex items-center gap-1.5">
+                className="px-3 py-1.5 rounded-md text-sm bg-primary hover:bg-primary disabled:opacity-40 disabled:cursor-not-allowed text-body inline-flex items-center gap-1.5">
           {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
           {running ? 'Uploading…' : `Upload ${queued + failed || ''}`.trim()}
         </button>
         {allow_folders && (
           <button type="button" onClick={() => dirRef.current?.click()} disabled={running}
-                  className="px-3 py-1.5 rounded-md text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-40 text-gray-200 inline-flex items-center gap-1.5">
+                  className="px-3 py-1.5 rounded-md text-sm bg-raised hover:bg-raised disabled:opacity-40 text-body inline-flex items-center gap-1.5">
             <FolderUp className="w-4 h-4" /> Add folder
           </button>
         )}
         {failed > 0 && (
           <button type="button" onClick={retryFailed} disabled={running}
-                  className="px-3 py-1.5 rounded-md text-sm bg-amber-700 hover:bg-amber-600 disabled:opacity-40 text-amber-50 inline-flex items-center gap-1.5">
+                  className="px-3 py-1.5 rounded-md text-sm bg-warning hover:bg-warning disabled:opacity-40 text-body inline-flex items-center gap-1.5">
             <RotateCw className="w-4 h-4" /> Retry {failed}
           </button>
         )}
         {done > 0 && !running && (
           <button type="button" onClick={clearDone}
-                  className="px-3 py-1.5 rounded-md text-sm bg-gray-800 hover:bg-gray-700 text-gray-400">
+                  className="px-3 py-1.5 rounded-md text-sm bg-card hover:bg-raised text-muted">
             Clear done
           </button>
         )}
@@ -196,18 +196,18 @@ export const DBulkUpload: UIComponent = ({ node }) => {
       {total > 0 && (
         <div className="space-y-1.5">
           <div
-            className="h-2 w-full bg-gray-800 rounded-full overflow-hidden"
+            className="h-2 w-full bg-card rounded-full overflow-hidden"
             role="progressbar"
             aria-label="Bulk upload progress"
             aria-valuemin={0}
             aria-valuemax={total}
             aria-valuenow={done}
           >
-            <div className="h-full bg-green-500 transition-all duration-300 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
+            <div className="h-full bg-success transition-all duration-300 motion-reduce:transition-none" style={{ width: `${pct}%` }} />
           </div>
-          <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center justify-between text-xs text-muted">
             <span>{done}/{total} done{uploading ? ` · ${uploading} uploading` : ''}{queued ? ` · ${queued} queued` : ''}</span>
-            {failed > 0 ? <span className="text-red-400">{failed} failed</span> : <span>{pct}%</span>}
+            {failed > 0 ? <span className="text-danger">{failed} failed</span> : <span>{pct}%</span>}
           </div>
         </div>
       )}
@@ -215,21 +215,21 @@ export const DBulkUpload: UIComponent = ({ node }) => {
       {total > 0 && total <= 200 && (
         <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
           {items.map(it => (
-            <div key={it.id} className="flex items-center gap-2 bg-gray-800/40 rounded px-2 py-1 text-sm">
-              {it.status === 'done' && <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />}
-              {it.status === 'error' && <XCircle className="w-4 h-4 text-red-400 shrink-0" />}
-              {it.status === 'uploading' && <Loader2 className="w-4 h-4 text-blue-400 shrink-0 animate-spin" />}
-              {it.status === 'queued' && <div className="w-4 h-4 shrink-0 rounded-full border border-gray-600" />}
-              <span className="text-gray-300 truncate flex-1">{it.name}</span>
+            <div key={it.id} className="flex items-center gap-2 bg-card/40 rounded px-2 py-1 text-sm">
+              {it.status === 'done' && <CheckCircle2 className="w-4 h-4 text-success shrink-0" />}
+              {it.status === 'error' && <XCircle className="w-4 h-4 text-danger shrink-0" />}
+              {it.status === 'uploading' && <Loader2 className="w-4 h-4 text-primary shrink-0 animate-spin" />}
+              {it.status === 'queued' && <div className="w-4 h-4 shrink-0 rounded-full border border-strong" />}
+              <span className="text-body truncate flex-1">{it.name}</span>
               {it.status === 'error' && it.error
-                ? <span className="text-red-400 text-xs shrink-0 truncate max-w-[40%]" title={String(it.error)}>{String(it.error)}</span>
-                : <span className="text-gray-500 text-xs shrink-0">{fmtSize(it.size)}</span>}
+                ? <span className="text-danger text-xs shrink-0 truncate max-w-[40%]" title={String(it.error)}>{String(it.error)}</span>
+                : <span className="text-muted text-xs shrink-0">{fmtSize(it.size)}</span>}
             </div>
           ))}
         </div>
       )}
       {total > 200 && (
-        <p className="text-xs text-gray-500">{total} files queued — list hidden for performance; the bar above tracks progress.</p>
+        <p className="text-xs text-muted">{total} files queued — list hidden for performance; the bar above tracks progress.</p>
       )}
     </div>
   );

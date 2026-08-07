@@ -1,7 +1,7 @@
 {
   "name": "@imperal/ui-kit",
   "version": "0.2.0",
-  "description": "Imperal declarative UINode -> React renderer — the same UI components the Imperal Panel uses.",
+  "description": "Imperal declarative UINode -> React renderer \u2014 the same UI components the Imperal Panel uses.",
   "type": "module",
   "exports": {
     ".": {
@@ -11,6 +11,18 @@
     "./styles.css": {
       "types": "./styles.d.ts",
       "default": "./dist/styles.css"
+    },
+    "./provider": {
+      "import": "./dist/provider.js",
+      "types": "./dist/provider.d.ts"
+    },
+    "./types": {
+      "types": "./dist/types-public.d.ts",
+      "default": "./dist/types-public.js"
+    },
+    "./lazy": {
+      "import": "./dist/lazy.js",
+      "types": "./dist/lazy.d.ts"
     }
   },
   "files": [
@@ -23,9 +35,13 @@
     "build:css": "npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run contract:check && npm test && npm run build && node examples/render-check.mjs --strict && npm audit && npm run check:packed",
+    "check": "npm run lint && npm run typecheck && npm run contract:check && npm run coverage && npm run build && npm run check:css && npm run check:bundle && node examples/render-check.mjs --strict && npm audit && npm run check:packed",
     "contract:check": "node scripts/check-contract.mjs",
-    "check:packed": "node scripts/check-packed-consumer.mjs"
+    "check:packed": "node scripts/check-packed-consumer.mjs",
+    "lint": "eslint src",
+    "coverage": "vitest run --coverage",
+    "check:css": "node scripts/check-css-isolation.mjs",
+    "check:bundle": "node scripts/check-bundle-budget.mjs"
   },
   "peerDependencies": {
     "react": ">=19",
@@ -33,16 +49,23 @@
   },
   "peerDependenciesMeta": {},
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@imperal/design-tokens": "file:../imperal-design-tokens",
     "@tailwindcss/cli": "^4",
     "@tailwindcss/typography": "^0.5",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.3",
     "@types/dompurify": "^3.0.5",
+    "@types/jest-axe": "^3.5.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitest/coverage-v8": "^3.2.7",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "jest-axe": "^10.0.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.15",
     "postcss-prefixwrap": "^1.58.0",
@@ -51,6 +74,7 @@
     "tailwindcss": "^4",
     "tsup": "^8",
     "typescript": "^5",
+    "typescript-eslint": "^8.66.0",
     "vitest": "^3.2.7"
   },
   "publishConfig": {
@@ -76,6 +100,7 @@
     "cytoscape": "^3.33.2",
     "cytoscape-cose-bilkent": "^4.1.0",
     "dompurify": "3.4.12",
+    "isomorphic-dompurify": "^2.36.0",
     "lucide-react": "^0.468.0",
     "react-cytoscapejs": "^2.0.0",
     "react-markdown": "^10.1.0",
@@ -86,5 +111,8 @@
   },
   "overrides": {
     "esbuild": "0.28.1"
-  }
+  },
+  "sideEffects": [
+    "./dist/styles.css"
+  ]
 }

@@ -1,6 +1,12 @@
 // Declarative UI type system — JSON → React renderer contract
 
 export interface UINode {
+  /** Stable identity across declarative refreshes. */
+  id?: string;
+  /** Optional explicit React reconciliation key. */
+  key?: string;
+  /** Bump to deliberately reset state without changing identity. */
+  revision?: string | number;
   type: string;
   props: Record<string, unknown>;
 }

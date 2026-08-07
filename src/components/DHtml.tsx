@@ -1,16 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import type { UIComponent } from '../types';
 
-const DARK_THEME_CSS = `body{font-family:system-ui,sans-serif;font-size:14px;line-height:1.6;color:#d1d5db;background:transparent;margin:0;padding:0;overflow-wrap:anywhere}a{color:#60a5fa}img{max-width:100%;height:auto}pre{background:#1f2937;padding:8px;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #374151;padding:6px 10px}`;
-const LIGHT_THEME_CSS = `body{font-family:system-ui,sans-serif;font-size:14px;line-height:1.65;color:#1a1a1a;background:#fff;margin:0;padding:16px 20px;overflow-wrap:anywhere}a{color:#2563eb}img{max-width:100%;height:auto}pre{background:#f3f4f6;padding:8px;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #d1d5db;padding:6px 10px}`;
+const DARK_THEME_CSS = `body{font-family:system-ui,sans-serif;font-size:.875rem;line-height:1.6;color:#d1d5db;background:transparent;margin:0;padding:0;overflow-wrap:anywhere}a{color:#60a5fa}img{max-width:100%;height:auto}pre{background:#1f2937;padding:.5rem;overflow:auto}table{border-collapse:collapse;width:100%;display:block;overflow:auto}td,th{border:.0625rem solid #374151;padding:.375rem .625rem}`;
+const LIGHT_THEME_CSS = `body{font-family:system-ui,sans-serif;font-size:.875rem;line-height:1.65;color:#1a1a1a;background:#fff;margin:0;padding:1rem clamp(1rem,3vw,1.25rem);overflow-wrap:anywhere}a{color:#2563eb}img{max-width:100%;height:auto}pre{background:#f3f4f6;padding:.5rem;overflow:auto}table{border-collapse:collapse;width:100%;display:block;overflow:auto}td,th{border:.0625rem solid #d1d5db;padding:.375rem .625rem}`;
 
 function sanitizeHtml(content: string): string {
-  const sanitizer = DOMPurify as unknown as { sanitize?: (value: string, options: object) => string };
-  if (typeof window === 'undefined' || typeof sanitizer.sanitize !== 'function') return '';
-  return sanitizer.sanitize(content, {
+  return DOMPurify.sanitize(content, {
     ADD_ATTR: ['target', 'rel'],
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ['script', 'style', 'object', 'embed', 'iframe'],
@@ -43,7 +41,7 @@ export const DHtml: UIComponent = ({ node }) => {
   }, [srcdoc]);
 
   if (!sandbox) {
-    return <div className={theme === 'light' ? 'prose prose-sm max-w-none' : 'prose prose-invert prose-sm max-w-none text-gray-300'} dangerouslySetInnerHTML={{ __html: sanitized }} />;
+    return <div className={theme === 'light' ? 'prose prose-sm max-w-none' : 'prose prose-invert prose-sm max-w-none text-body'} dangerouslySetInnerHTML={{ __html: sanitized }} />;
   }
 
   return (

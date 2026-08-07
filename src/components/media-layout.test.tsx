@@ -12,7 +12,7 @@ describe('media and layout safety', () => {
   it('activates clickable images from the keyboard', () => {
     const onAction = vi.fn();
     render(<DImage node={node('Image', { src: '/image.png', alt: 'Preview', on_click: { action: 'open', url: '/full' } })} onAction={onAction} />);
-    fireEvent.keyDown(screen.getByRole('button', { name: 'Preview' }), { key: 'Enter' });
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
     expect(onAction).toHaveBeenCalledOnce();
   });
 

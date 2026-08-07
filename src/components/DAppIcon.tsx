@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import type { UIComponent } from '../types';
+import { useImperalUI } from '../ImperalUIProvider';
 
 export interface AppIconRenderProps {
   appId: string;
@@ -25,6 +26,7 @@ function initials(value: string): string {
 }
 
 export const DAppIcon: UIComponent = ({ node }) => {
+  const { appIconRenderer: providerRenderer } = useImperalUI();
   const props = node.props as {
     app_id?: string;
     appId?: string;
@@ -37,12 +39,12 @@ export const DAppIcon: UIComponent = ({ node }) => {
 
   return (
     <div
-      className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-blue-500/30 bg-blue-500/15 text-blue-100"
+      className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-primary/30 bg-primary/15 text-on-primary"
       role="img"
       aria-label={`${displayName} icon`}
     >
-      {appIconRenderer
-        ? appIconRenderer({ appId, displayName, className })
+      {providerRenderer || appIconRenderer
+        ? (providerRenderer || appIconRenderer)!({ appId, displayName, className })
         : <span className="text-xs font-semibold" aria-hidden="true">{initials(displayName)}</span>}
     </div>
   );

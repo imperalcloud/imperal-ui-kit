@@ -1,16 +1,17 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { X } from 'lucide-react';
 import type { UIComponent } from '../types';
 import { FormContext } from './DForm';
+import { nodeIdentity, useSyncedState } from '../hooks';
 
 interface SelectOption {
   value: string;
   label: string;
 }
 
-export const DMultiSelect: UIComponent = ({ node, onAction }) => {
+export const DMultiSelect: UIComponent = ({ node }) => {
   const form = useContext(FormContext);
   const {
     options: rawOptions = [],
@@ -25,8 +26,8 @@ export const DMultiSelect: UIComponent = ({ node, onAction }) => {
   };
 
   const options: SelectOption[] = Array.isArray(rawOptions) ? rawOptions : [];
-  const initValues: string[] = Array.isArray(rawInitValues) ? rawInitValues : rawInitValues ? [String(rawInitValues)] : [];
-  const [localValues, setLocalValues] = useState<string[]>(initValues);
+  const initValues = useMemo<string[]>(() => Array.isArray(rawInitValues) ? rawInitValues : rawInitValues ? [String(rawInitValues)] : [], [rawInitValues]);
+  const [localValues, setLocalValues] = useSyncedState<string[]>(initValues, nodeIdentity(node));
   useEffect(() => {
     if (form && form.values[param_name] === undefined) form.setField(param_name, initValues);
   }, [form, initValues, param_name]);
@@ -56,7 +57,7 @@ export const DMultiSelect: UIComponent = ({ node, onAction }) => {
             return (
               <span
                 key={v}
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-900/50 text-blue-300 text-xs rounded-full"
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/50 text-primary text-xs rounded-full"
               >
                 {opt?.label || v}
                 <button type="button" onClick={() => toggle(v)} aria-label={`Remove ${opt?.label || v}`}>
@@ -73,7 +74,7 @@ export const DMultiSelect: UIComponent = ({ node, onAction }) => {
             if (e.target.value) toggle(e.target.value);
             e.target.value = '';
           }}
-          className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+          className="w-full bg-panel border border-default rounded-md px-3 py-2 text-sm text-body focus:border-primary focus:ring-1 focus:ring-focus focus:outline-none"
         >
           <option value="">{placeholder || 'Add...'}</option>
           {available.map(o => (

@@ -97,7 +97,6 @@ function MarkdownMessageImpl({ content }: { content: string }) {
             <td className="border-b border-subtle px-3 py-2 text-text-muted break-words">{children}</td>
           ),
           img: ({ src, alt }) => (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={typeof src === 'string' ? src : ''}
               alt={alt ?? ''}

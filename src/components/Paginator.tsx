@@ -21,22 +21,22 @@ export default function Paginator({ page, totalPages, totalItems, loading, onPag
   if (totalPages <= 1 && totalItems <= 0) return null;
 
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2 border-t border-gray-800/40 flex-shrink-0">
+    <div className="flex items-center gap-1.5 px-3 py-2 border-t border-hair/40 flex-shrink-0">
       <button onClick={() => onPageChange(page - 1)} disabled={page <= 1 || loading}
-        className="p-0.5 rounded text-gray-500 hover:text-gray-300 disabled:opacity-20 disabled:cursor-not-allowed transition-colors">
+        className="p-0.5 rounded text-muted hover:text-body disabled:opacity-20 disabled:cursor-not-allowed transition-colors">
         <ChevronLeft size={14} />
       </button>
-      <span className="text-[10px] text-gray-500 tabular-nums">
+      <span className="text-[.625rem] text-muted tabular-nums">
         {page}/{Math.max(1, totalPages)}
       </span>
       <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages || loading}
-        className="p-0.5 rounded text-gray-500 hover:text-gray-300 disabled:opacity-20 disabled:cursor-not-allowed transition-colors">
+        className="p-0.5 rounded text-muted hover:text-body disabled:opacity-20 disabled:cursor-not-allowed transition-colors">
         <ChevronRight size={14} />
       </button>
       {totalItems > 0 && (
         <>
-          <span className="text-gray-700 text-[10px]">·</span>
-          <span className="text-[10px] text-gray-600 truncate">
+          <span className="text-subtle text-[.625rem]">·</span>
+          <span className="text-[.625rem] text-subtle truncate">
             {totalItems} item{totalItems !== 1 ? 's' : ''}
             {extra ? ` ${extra}` : ''}
           </span>
