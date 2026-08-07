@@ -19,7 +19,7 @@ export const DSlideOver: UIComponent = ({ node, onAction }) => {
   const titleId = useId();
   useEffect(() => setVisible(open), [open, node.id, node.key, node.revision]);
   const close = () => { setVisible(false); if (on_close) void (onAction ?? ui.onAction)?.(on_close); };
-  useModalFocus(visible, panelRef, close);
+  useModalFocus(visible, panelRef, close, !ui.contained);
 
   if (!visible) return null;
   return (

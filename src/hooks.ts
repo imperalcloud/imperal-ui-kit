@@ -16,7 +16,7 @@ export function useSyncedState<T>(value: T, identity?: string): [T, React.Dispat
 
 const FOCUSABLE = 'a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])';
 
-export function useModalFocus(active: boolean, container: React.RefObject<HTMLElement | null>, onEscape: () => void): void {
+export function useModalFocus(active: boolean, container: React.RefObject<HTMLElement | null>, onEscape: () => void, lockDocumentScroll = true): void {
   const previousFocus = useRef<HTMLElement | null>(null);
   const escapeRef = useRef(onEscape);
   escapeRef.current = onEscape;
@@ -25,7 +25,7 @@ export function useModalFocus(active: boolean, container: React.RefObject<HTMLEl
     if (!active) return;
     previousFocus.current = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (lockDocumentScroll) document.body.style.overflow = 'hidden';
     const panel = container.current;
     const first = panel?.querySelector<HTMLElement>(FOCUSABLE);
     (first ?? panel)?.focus();
@@ -50,10 +50,10 @@ export function useModalFocus(active: boolean, container: React.RefObject<HTMLEl
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
+      if (lockDocumentScroll) document.body.style.overflow = previousOverflow;
       previousFocus.current?.focus();
     };
-  }, [active, container]);
+  }, [active, container, lockDocumentScroll]);
 }
 
 export function useStableArray<T>(value: T[]): T[] {

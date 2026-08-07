@@ -37,6 +37,8 @@ export interface ImperalUIConfig {
   onConfirm?: (message: string) => boolean | Promise<boolean>;
   onError?: (error: unknown, context: { nodeType?: string; action?: UIAction }) => void;
   appIconRenderer?: AppIconRenderer;
+  /** Embedded previews keep focus semantics but must not lock the host document scroll. */
+  contained?: boolean;
 }
 
 interface ActionState {
@@ -60,17 +62,18 @@ export interface ImperalUIProviderProps {
   onConfirm?: ImperalUIConfig['onConfirm'];
   onError?: ImperalUIConfig['onError'];
   appIconRenderer?: AppIconRenderer;
+  contained?: boolean;
   className?: string;
   asChild?: boolean;
 }
 
 export function ImperalUIProvider({
   children, theme = 'system', locale = 'en', direction = 'auto', messages,
-  onAction, onConfirm, onError, appIconRenderer, className = '', asChild = false,
+  onAction, onConfirm, onError, appIconRenderer, contained = false, className = '', asChild = false,
 }: ImperalUIProviderProps) {
   const value = useMemo<ImperalUIConfig>(() => ({
-    locale, direction, messages: { ...EN_MESSAGES, ...messages }, onAction, onConfirm, onError, appIconRenderer,
-  }), [locale, direction, messages, onAction, onConfirm, onError, appIconRenderer]);
+    locale, direction, messages: { ...EN_MESSAGES, ...messages }, onAction, onConfirm, onError, appIconRenderer, contained,
+  }), [locale, direction, messages, onAction, onConfirm, onError, appIconRenderer, contained]);
 
   const content = <ImperalUIContext.Provider value={value}>{children}</ImperalUIContext.Provider>;
   if (asChild) return content;

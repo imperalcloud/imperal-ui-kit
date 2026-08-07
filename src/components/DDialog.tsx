@@ -16,7 +16,7 @@ export const DDialog: UIComponent = ({ node, onAction }) => {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
-  useModalFocus(open, panelRef, close);
+  useModalFocus(open, panelRef, close, !ui.contained);
 
   if (!open) return null;
   return (

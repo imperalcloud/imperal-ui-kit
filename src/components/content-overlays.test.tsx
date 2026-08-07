@@ -1,7 +1,7 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DeclarativeRenderer } from '../index';
+import { DeclarativeRenderer, ImperalUIRoot } from '../index';
 
 afterEach(cleanup);
 
@@ -18,6 +18,19 @@ describe('content and overlays', () => {
     expect(screen.getByRole('dialog', { name: 'Confirm change' })).toBeTruthy();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('does not lock host document scrolling for contained overlay previews', () => {
+    document.body.style.overflow = 'auto';
+    const { unmount } = render(
+      <ImperalUIRoot contained>
+        <DeclarativeRenderer root={false} node={{ type: 'Dialog', props: { title: 'Preview dialog' } }} />
+      </ImperalUIRoot>,
+    );
+    expect(document.body.style.overflow).toBe('auto');
+    unmount();
+    expect(document.body.style.overflow).toBe('auto');
+    document.body.style.overflow = '';
   });
 
   it('uses a semantic menu trigger and dispatches the chosen action', () => {
