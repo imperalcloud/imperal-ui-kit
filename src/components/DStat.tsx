@@ -12,6 +12,18 @@ const TREND_COLORS: Record<TrendDirection, string> = {
   neutral: 'text-muted',
 };
 
+// Semantic tint for the metric itself. A number is not neutral: money spent
+// reads red, healthy balance green. Keyed to theme tokens, never raw Tailwind
+// scales, so agency themes and dark mode keep working.
+const VALUE_COLORS = {
+  blue: 'text-primary',
+  green: 'text-success',
+  red: 'text-danger',
+  yellow: 'text-warning',
+  purple: 'text-accent',
+  gray: 'text-muted',
+} as const;
+
 const TREND_ICONS = {
   up: TrendingUp,
   down: TrendingDown,
@@ -26,6 +38,7 @@ export const DStat: UIComponent = ({ node }) => {
     trend_direction = 'neutral',
     description,
     icon,
+    color,
   } = node.props as {
     label?: string;
     value?: string | number;
@@ -33,6 +46,7 @@ export const DStat: UIComponent = ({ node }) => {
     trend_direction?: TrendDirection;
     description?: string;
     icon?: string;
+    color?: keyof typeof VALUE_COLORS;
   };
 
   const trendColor = TREND_COLORS[trend_direction] ?? TREND_COLORS.neutral;
@@ -54,7 +68,7 @@ export const DStat: UIComponent = ({ node }) => {
       </div>
 
       {/* Value */}
-      <div className="min-w-0 max-w-full break-words text-2xl font-bold text-body leading-none">
+      <div className={`min-w-0 max-w-full break-words text-2xl font-bold leading-none ${(color && VALUE_COLORS[color]) || 'text-body'}`}>
         {value}
       </div>
 

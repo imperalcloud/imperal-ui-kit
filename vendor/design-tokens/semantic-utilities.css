@@ -170,6 +170,27 @@
   .border-info    { border-color: var(--imp-color-info); }
 
   .field-gap { gap: var(--imp-space-1); }
+
+  /* The system label style for the LABELED INPUT variant. Every labeled field
+   * (Input, TextArea, Select, DatePicker, ...) renders its caption with this
+   * one class, so colour, size, weight and tracking stay a reusable token —
+   * never a per-component hardcode. `.field-label-caps` is the opt-in
+   * uppercase treatment for dense metric headers; body forms stay sentence
+   * case, because uppercase hurts readability on long labels and some scripts
+   * have no case at all. */
+  .field-label {
+    font-size:      var(--imp-label-font-size);
+    font-weight:    var(--imp-label-font-weight);
+    color:          var(--imp-label-color);
+    letter-spacing: var(--imp-label-letter-spacing);
+    text-transform: var(--imp-label-text-transform);
+    line-height:    1.4;
+  }
+  .field-label-caps { text-transform: uppercase; letter-spacing: 0.06em; }
+  /* The required marker is meaning, not decoration — the component renders it
+   * as a real character too, so it never depends on colour alone. */
+  .field-required { color: var(--imp-color-danger); }
+
   .control-base {
     min-height: 2.75rem;
     width: 100%;

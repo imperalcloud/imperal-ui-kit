@@ -18,7 +18,7 @@ export function Field({ label, description, error, required, children, className
   const errorId = error ? `${id}-error` : undefined;
   return (
     <div className={`flex min-w-0 flex-col field-gap ${className}`.trim()}>
-      {label && <label htmlFor={id} className="text-sm font-medium text-body">{label}{required && <span aria-hidden="true" className="text-danger"> *</span>}</label>}
+      {label && <label htmlFor={id} className="field-label">{label}{required && <span className="field-required"> *</span>}</label>}
       {children({ id, descriptionId, errorId })}
       {description && <p id={descriptionId} className="text-xs text-muted">{description}</p>}
       {error && <InlineError id={errorId}>{error}</InlineError>}

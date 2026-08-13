@@ -234,6 +234,17 @@
   --imp-input-font-size:  var(--imp-text-sm);
   --imp-input-border-w:   var(--imp-border-thin);
   --imp-input-height:     var(--imp-height-md);
+
+  /* Field LABEL — the system style for the caption above a control. A label is
+   * furniture, not content: it must read as quieter than the value the user
+   * typed, while staying legible. Muted ink + xs size + slight positive
+   * tracking. Exposed as TOKENS (not hardcoded in a component) so an agency
+   * theme can restyle every label in the platform from one place. */
+  --imp-label-font-size:      var(--imp-text-xs);
+  --imp-label-font-weight:    600;
+  --imp-label-color:          var(--imp-color-text-muted);
+  --imp-label-letter-spacing: 0.02em;
+  --imp-label-text-transform: none;
   /* Field chrome — a field is a RECESSED well, so it sits a step darker than
    * the card it lives on (dark theme) or a step lighter-than-page (day). The
    * placeholder is deliberately mid-grey: legible as a hint, clearly not a
