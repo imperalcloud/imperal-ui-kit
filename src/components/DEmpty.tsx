@@ -13,7 +13,7 @@ export const DEmpty: UIComponent = ({ node, onAction }) => {
       {action && onAction && (
         <button
           onClick={() => onAction(action)}
-          className="mt-3 px-3 py-1.5 text-xs text-primary border border-primary rounded-md hover:bg-primary/30"
+          className="focus-ring mt-3 px-3 py-1.5 text-xs text-primary border border-primary rounded-md hover:bg-primary/30"
         >
           {action.params?.label || 'Try again'}
         </button>

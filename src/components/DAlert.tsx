@@ -71,7 +71,7 @@ export const DAlert: UIComponent = ({ node }) => {
       {dismissible && (
         <button
           onClick={() => setDismissed(true)}
-          className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity p-0.5 rounded"
+          className="focus-ring flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity p-0.5 rounded"
           aria-label="Dismiss"
         >
           <X className="w-3.5 h-3.5" />

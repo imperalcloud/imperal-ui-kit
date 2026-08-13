@@ -12,7 +12,7 @@ export const DError: UIComponent = ({ node, onAction }) => {
       {retry && onAction && (
         <button
           onClick={() => onAction(retry)}
-          className="mt-3 px-3 py-1.5 text-xs text-danger border border-danger rounded-md hover:bg-danger/30"
+          className="focus-ring mt-3 px-3 py-1.5 text-xs text-danger border border-danger rounded-md hover:bg-danger/30"
         >
           Try again
         </button>

@@ -125,6 +125,34 @@ describe('labeled input variant — remaining fields', () => {
   });
 });
 
+// Keyboard focus must look the SAME everywhere, and it must be visible at all.
+// These four buttons relied on the browser default outline, and the rich editor
+// actively suppressed focus with focus:outline-none and replaced it with
+// nothing — invisible focus is a keyboard user's dead end.
+describe('system focus ring', () => {
+  const BUTTONS: Array<[string, UINode]> = [
+    ['Accordion', { type: 'Accordion', props: { sections: [{ id: 's1', title: 'One', children: [] }] } }],
+    ['Alert', { type: 'Alert', props: { message: 'Heads up', dismissible: true } }],
+    ['Empty', { type: 'Empty', props: { message: 'Nothing here', action: { type: 'call', tool: 'retry' } } }],
+    ['Error', { type: 'Error', props: { message: 'It broke', retry: { type: 'call', tool: 'retry' } } }],
+  ];
+
+  it.each(BUTTONS)('%s uses the system focus-ring class, not the UA default', (_name, node) => {
+    renderNode(node);
+    const button = document.querySelector('button')!;
+    expect(button).toBeTruthy();
+    expect(button.className).toContain('focus-ring');
+  });
+
+  it('RichEditor shows focus on its wrapper, since the editable div suppresses the outline', () => {
+    renderNode({ type: 'RichEditor', props: { label: 'Body' } });
+    const wrapper = document.querySelector('.surface')!;
+    expect(wrapper).toBeTruthy();
+    // the ring is delivered by focus-within on the bordered surface
+    expect(wrapper.className).toContain('focus-within:outline');
+  });
+});
+
 describe('Stat semantic colour', () => {
   it('tints the value with the requested semantic colour', () => {
     renderNode({ type: 'Stat', props: { label: 'Spent', value: '34,287,494', color: 'red' } });

@@ -165,7 +165,7 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
 
   return (
     <Field label={label} labelId={labelId} controlId={controlId} description={description} error={error} required={required}>{() => (
-    <div className="surface flex flex-col overflow-hidden">
+    <div className="surface flex flex-col overflow-hidden focus-within:outline focus-within:outline-2 focus-within:outline-[var(--imp-color-focus-ring)] focus-within:outline-offset-2">
       {/* Toolbar */}
       {toolbar && editor && (
         <div className="flex items-center flex-wrap gap-0 px-2 py-1.5 border-b border-hair bg-app/50">

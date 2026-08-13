@@ -32,7 +32,7 @@ export const DAccordion: UIComponent = ({ node, onAction }) => {
             aria-expanded={expanded}
             aria-controls={panelId}
             onClick={() => toggle(itemId)}
-            className="flex items-center gap-2 w-full py-2.5 px-1 text-sm text-body hover:text-body"
+            className="focus-ring flex items-center gap-2 w-full py-2.5 px-1 text-sm text-body hover:text-body"
           >
             <ChevronRight
               className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`}
