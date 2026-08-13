@@ -63,6 +63,8 @@ export { DTagInput } from './components/DTagInput';
 export { DTextArea } from './components/DTextArea';
 export { DTimeline } from './components/DTimeline';
 export { DToggle } from './components/DToggle';
+export { DCheckbox } from './components/DCheckbox';
+export { DRadioGroup } from './components/DRadioGroup';
 export { DTooltip } from './components/DTooltip';
 export { DTree } from './components/DTree';
 export { DVideo } from './components/DVideo';

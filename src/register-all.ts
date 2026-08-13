@@ -33,6 +33,8 @@ import { DSelect } from './components/DSelect';
 import { DMultiSelect } from './components/DMultiSelect';
 import { DToggle } from './components/DToggle';
 import { DSlider } from './components/DSlider';
+import { DCheckbox } from './components/DCheckbox';
+import { DRadioGroup } from './components/DRadioGroup';
 import { DDatePicker } from './components/DDatePicker';
 import { DFileUpload } from './components/DFileUpload';
 import { DBulkUpload } from './components/DBulkUpload';
@@ -108,6 +110,10 @@ export function registerAllComponents(): void {
   registerComponent('multiselect', DMultiSelect);
   registerComponent('toggle', DToggle);
   registerComponent('slider', DSlider);
+  registerComponent('checkbox', DCheckbox);
+  registerComponent('radiogroup', DRadioGroup);
+  // snake_case alias: the SDK type is RadioGroup, authors reach for both.
+  registerComponent('radio_group', DRadioGroup);
   registerComponent('datepicker', DDatePicker);
   registerComponent('fileupload', DFileUpload);
   registerComponent('bulkupload', DBulkUpload);

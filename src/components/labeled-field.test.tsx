@@ -262,3 +262,93 @@ describe('tree hierarchy', () => {
     expect(onAction).toHaveBeenCalledTimes(1);        // leaf = action
   });
 });
+
+// The two controls the kit never had. Taken from the shadcn INVENTORY question
+// — "which elements does a complete set have?" — not from its markup: the
+// structure here is ours (field-gap, real for/id, InlineError, FormContext).
+describe('Checkbox', () => {
+  it('Checkbox reads as one sentence with its label, bound by for/id', () => {
+    renderNode({ type: 'Checkbox', props: { label: 'I agree to the terms', param_name: 'consent' } });
+    // getByLabelText only resolves through a REAL binding, never mere adjacency
+    const box = screen.getByLabelText(/I agree to the terms/) as HTMLInputElement;
+    expect(box.type).toBe('checkbox');
+    const label = document.querySelector('label')!;
+    expect(label.getAttribute('for')).toBe(box.id);
+  });
+
+  it('keeps the field-gap container the labeled-field contract requires', () => {
+    renderNode({ type: 'Checkbox', props: { label: 'Subscribe' } });
+    expect(document.querySelector('.field-gap')).toBeTruthy();
+  });
+
+  it('announces its help text and its error', () => {
+    renderNode({ type: 'Checkbox', props: { label: 'Subscribe', description: 'One email a month.', error: 'Required' } });
+    const box = screen.getByLabelText(/Subscribe/);
+    const described = (box.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+    expect(described.length).toBe(2);
+    expect(box.getAttribute('aria-invalid')).toBe('true');
+    expect(screen.getByText('One email a month.')).toBeTruthy();
+  });
+
+  it('ticking it reports the new boolean, not a string', () => {
+    const onAction = renderNode({
+      type: 'Checkbox',
+      props: { label: 'Subscribe', param_name: 'subscribe', on_change: { action: 'call', function: 'save' } },
+    });
+    fireEvent.click(screen.getByLabelText(/Subscribe/));
+    expect(onAction).toHaveBeenCalled();
+    expect(onAction.mock.calls[0][0].params.subscribe).toBe(true);
+  });
+});
+
+describe('RadioGroup', () => {
+  const OPTIONS = [
+    { value: 'card', label: 'By card' },
+    { value: 'manual', label: 'Manually, by invoice' },
+    { value: 'free', label: 'Free — no charge' },
+  ];
+
+  it('is a real radiogroup, labelled by its own label', () => {
+    renderNode({ type: 'RadioGroup', props: { label: 'How should this customer pay?', options: OPTIONS } });
+    const group = screen.getByRole('radiogroup');
+    const labelledBy = group.getAttribute('aria-labelledby')!;
+    expect(document.getElementById(labelledBy)!.textContent).toContain('How should this customer pay?');
+  });
+
+  it('binds every option label to its own input', () => {
+    renderNode({ type: 'RadioGroup', props: { label: 'Pay', options: OPTIONS } });
+    for (const option of OPTIONS) {
+      const input = screen.getByLabelText(option.label) as HTMLInputElement;
+      expect(input.type).toBe('radio');
+    }
+  });
+
+  it('shares one name across options, so the browser gives arrow-key navigation', () => {
+    renderNode({ type: 'RadioGroup', props: { label: 'Pay', options: OPTIONS } });
+    const names = new Set(
+      Array.from(document.querySelectorAll('input[type="radio"]')).map(i => (i as HTMLInputElement).name),
+    );
+    expect(names.size).toBe(1);
+  });
+
+  it('marks exactly the selected option as checked', () => {
+    renderNode({ type: 'RadioGroup', props: { label: 'Pay', options: OPTIONS, value: 'manual' } });
+    const checked = Array.from(document.querySelectorAll('input[type="radio"]')).filter(i => (i as HTMLInputElement).checked);
+    expect(checked.length).toBe(1);
+    expect((checked[0] as HTMLInputElement).value).toBe('manual');
+  });
+
+  it('reports the chosen value when a different option is picked', () => {
+    const onAction = renderNode({
+      type: 'RadioGroup',
+      props: { label: 'Pay', options: OPTIONS, value: 'card', param_name: 'billing_mode', on_change: { action: 'call', function: 'save' } },
+    });
+    fireEvent.click(screen.getByLabelText('Free — no charge'));
+    expect(onAction.mock.calls[0][0].params.billing_mode).toBe('free');
+  });
+
+  it('is reachable through the snake_case alias too', () => {
+    renderNode({ type: 'radio_group', props: { label: 'Pay', options: OPTIONS } });
+    expect(screen.getByRole('radiogroup')).toBeTruthy();
+  });
+});
