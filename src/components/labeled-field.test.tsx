@@ -151,6 +151,26 @@ describe('system focus ring', () => {
     // the ring is delivered by focus-within on the bordered surface
     expect(wrapper.className).toContain('focus-within:outline');
   });
+
+  it('Slider shows a keyboard focus ring, which a bare range does not', () => {
+    // A native <input type="range"> with accent-color set draws no visible
+    // focus in most engines, and this was the only interactive control in the
+    // kit with no focus treatment of any kind. focus-visible, not focus, so a
+    // mouse drag does not light it up.
+    renderNode({ type: 'Slider', props: { label: 'Volume', value: 40 } });
+    const range = document.querySelector('input[type="range"]')!;
+    expect(range).toBeTruthy();
+    expect(range.className).toContain('focus-visible:ring-2');
+  });
+
+  it('Slider keeps its label bound to the input, not merely adjacent', () => {
+    renderNode({ type: 'Slider', props: { label: 'Volume', value: 40 } });
+    const range = document.querySelector('input[type="range"]') as HTMLInputElement;
+    const label = document.querySelector('label') as HTMLLabelElement;
+    expect(label.htmlFor).toBe(range.id);
+    expect(range.id).not.toBe('');
+    expect(document.querySelector('.field-gap')).toBeTruthy();
+  });
 });
 
 describe('Stat semantic colour', () => {
