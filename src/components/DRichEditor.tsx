@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useId, useRef } from 'react';
 import { useEditor, EditorContent, Extension } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
+import { Field } from './primitives';
 
 // ── Toolbar helpers ──────────────────────────────────────────────────────────
 
@@ -49,6 +50,10 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
     on_change,
     param_name = 'content',
     toolbar = true,
+    label,
+    description,
+    error,
+    required = false,
   } = node.props as {
     content?: string;
     placeholder?: string;
@@ -56,7 +61,18 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
     on_change?: UIAction;
     param_name?: string;
     toolbar?: boolean;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
   };
+
+  // A contenteditable is not a labelable element, so the association is made
+  // with aria-labelledby against the Field's own <label> instead of for/id.
+  const labelId = useId();
+  const controlId = useId();
+  const descriptionId = description ? `${controlId}-description` : undefined;
+  const errorId = error ? `${controlId}-error` : undefined;
 
   // Debounce timer for on_change
   const changeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,6 +118,14 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
     editorProps: {
       attributes: {
         class: 'prose prose-invert prose-sm max-w-none focus:outline-none min-h-[7.5rem] px-3 py-2',
+        role: 'textbox',
+        'aria-multiline': 'true',
+        id: controlId,
+        ...(label ? { 'aria-labelledby': labelId } : {}),
+        ...(descriptionId || errorId
+          ? { 'aria-describedby': [descriptionId, errorId].filter(Boolean).join(' ') }
+          : {}),
+        ...(error ? { 'aria-invalid': 'true' } : {}),
       },
     },
     onUpdate: ({ editor }) => {
@@ -140,6 +164,7 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
   }, []);
 
   return (
+    <Field label={label} labelId={labelId} controlId={controlId} description={description} error={error} required={required}>{() => (
     <div className="surface flex flex-col overflow-hidden">
       {/* Toolbar */}
       {toolbar && editor && (
@@ -212,5 +237,6 @@ export const DRichEditor: UIComponent = ({ node, onAction }) => {
       {/* Editor content */}
       <EditorContent editor={editor} />
     </div>
+    )}</Field>
   );
 };

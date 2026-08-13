@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import type { UIComponent, UIAction } from '../types';
 import { FormContext } from './DForm';
 import { nodeIdentity, useSyncedState } from '../hooks';
+import { Field } from './primitives';
 
 interface DTagInputProps {
   values?: string[];
@@ -16,6 +17,10 @@ interface DTagInputProps {
   delimiters?: string[];
   validate?: string;
   validate_message?: string;
+  label?: string;
+  description?: string;
+  error?: string;
+  required?: boolean;
 }
 
 function groupSuggestions(suggestions: string[], grouped_by: string): Record<string, string[]> {
@@ -41,6 +46,10 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
     delimiters = [],
     validate = '',
     validate_message = '',
+    label,
+    description,
+    error,
+    required = false,
   } = node.props as DTagInputProps;
 
   const [validateError, setValidateError] = useState(false);
@@ -153,6 +162,7 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
   const groups = useGroups ? groupSuggestions(filteredSuggestions, grouped_by) : {};
 
   return (
+    <Field label={label} description={description} error={error} required={required}>{ids => (
     <div ref={containerRef} className="relative">
       <div
         className="field-chrome min-h-[2.75rem] w-full border rounded-md px-2 py-1.5 flex flex-wrap gap-1 items-center cursor-text focus-within:border-primary focus-within:ring-1 focus-within:ring-focus"
@@ -176,7 +186,10 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
         ))}
         <input
           ref={inputRef}
-          aria-label="Tags"
+          id={ids.id}
+          aria-describedby={[ids.descriptionId, ids.errorId].filter(Boolean).join(' ') || undefined}
+          aria-invalid={Boolean(error)}
+          aria-label={label ? undefined : 'Tags'}
           value={inputValue}
           onChange={e => { setInputValue(e.target.value); setIsOpen(true); }}
           onFocus={() => setIsOpen(true)}
@@ -226,5 +239,6 @@ export const DTagInput: UIComponent = ({ node, onAction }) => {
         <div className="text-xs text-danger mt-1 px-1">{validate_message}</div>
       )}
     </div>
+    )}</Field>
   );
 };

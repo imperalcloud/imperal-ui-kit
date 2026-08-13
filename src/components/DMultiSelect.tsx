@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import type { UIComponent } from '../types';
 import { FormContext } from './DForm';
 import { nodeIdentity, useSyncedState } from '../hooks';
+import { Field } from './primitives';
 
 interface SelectOption {
   value: string;
@@ -18,11 +19,21 @@ export const DMultiSelect: UIComponent = ({ node }) => {
     values: rawInitValues = [],
     placeholder = '',
     param_name = 'values',
+    label,
+    description,
+    error,
+    required = false,
+    disabled = false,
   } = node.props as {
     options?: SelectOption[];
     values?: string[];
     placeholder?: string;
     param_name?: string;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
   };
 
   const options: SelectOption[] = Array.isArray(rawOptions) ? rawOptions : [];
@@ -49,6 +60,7 @@ export const DMultiSelect: UIComponent = ({ node }) => {
   const available = options.filter(o => !selected.includes(o.value));
 
   return (
+    <Field label={label} description={description} error={error} required={required}>{ids => (
     <div className="space-y-2">
       {selected.length > 0 && (
         <div className="flex flex-wrap gap-1">
@@ -70,6 +82,11 @@ export const DMultiSelect: UIComponent = ({ node }) => {
       )}
       {available.length > 0 && (
         <select
+          id={ids.id}
+          aria-describedby={[ids.descriptionId, ids.errorId].filter(Boolean).join(' ') || undefined}
+          aria-invalid={Boolean(error)}
+          required={required}
+          disabled={disabled}
           onChange={e => {
             if (e.target.value) toggle(e.target.value);
             e.target.value = '';
@@ -85,5 +102,6 @@ export const DMultiSelect: UIComponent = ({ node }) => {
         </select>
       )}
     </div>
+    )}</Field>
   );
 };

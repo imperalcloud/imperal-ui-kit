@@ -5,6 +5,13 @@ import { AlertCircle, CheckCircle2, Info, X, XCircle } from 'lucide-react';
 
 export interface FieldProps {
   label?: React.ReactNode;
+  /** Optional id for the <label> element itself, so a non-labelable control
+   *  (e.g. a contenteditable editor) can reference it via aria-labelledby. */
+  labelId?: string;
+  /** Optional externally-generated control id. Needed when the control's
+   *  attributes are built before render (e.g. TipTap's useEditor), so the
+   *  component must know descriptionId/errorId up front. Defaults to useId(). */
+  controlId?: string;
   description?: React.ReactNode;
   error?: React.ReactNode;
   required?: boolean;
@@ -12,13 +19,14 @@ export interface FieldProps {
   className?: string;
 }
 
-export function Field({ label, description, error, required, children, className = '' }: FieldProps) {
-  const id = useId();
+export function Field({ label, labelId, controlId, description, error, required, children, className = '' }: FieldProps) {
+  const generatedId = useId();
+  const id = controlId ?? generatedId;
   const descriptionId = description ? `${id}-description` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   return (
     <div className={`flex min-w-0 flex-col field-gap ${className}`.trim()}>
-      {label && <label htmlFor={id} className="field-label">{label}{required && <span className="field-required"> *</span>}</label>}
+      {label && <label id={labelId} htmlFor={id} className="field-label">{label}{required && <span className="field-required"> *</span>}</label>}
       {children({ id, descriptionId, errorId })}
       {description && <p id={descriptionId} className="text-xs text-muted">{description}</p>}
       {error && <InlineError id={errorId}>{error}</InlineError>}

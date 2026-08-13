@@ -70,6 +70,61 @@ describe('labeled input variant', () => {
   });
 });
 
+// SYSTEM REQUIREMENT — the labeled contract must reach EVERY field a user can
+// type into, not just the first four. A field that cannot carry a label can
+// only be named by its placeholder, which disappears on the first keystroke.
+describe('labeled input variant — remaining fields', () => {
+  const MORE: Array<[string, UINode, RegExp]> = [
+    ['MultiSelect', { type: 'MultiSelect', props: { label: 'Tags', options: [{ value: 'a', label: 'A' }] } }, /Tags/],
+    ['TagInput', { type: 'TagInput', props: { label: 'Keywords' } }, /Keywords/],
+    ['RichEditor', { type: 'RichEditor', props: { label: 'Body' } }, /Body/],
+    // ui.Password is ui.Input(type="password") on the wire — same control, so
+    // the contract has to hold through the alias too.
+    ['Password', { type: 'Input', props: { label: 'API key', type: 'password' } }, /API key/],
+  ];
+
+  it.each(MORE)('%s exposes an accessible name that comes from its label', (_name, node, re) => {
+    renderNode(node);
+    // getByLabelText resolves ONLY through a real for/id or aria association —
+    // a visually adjacent label would not satisfy it.
+    expect(screen.getByLabelText(re)).toBeTruthy();
+  });
+
+  it.each(MORE)('%s puts label and control in one .field-gap container', (_name, node) => {
+    renderNode(node);
+    const label = document.querySelector('label')!;
+    expect(label.parentElement!.className).toContain('field-gap');
+  });
+
+  it.each(MORE)('%s styles its label with the system token', (_name, node) => {
+    renderNode(node);
+    expect(document.querySelector('label')!.className).toContain('field-label');
+  });
+
+  it('binds the RichEditor through aria-labelledby, since for/id cannot bind a contenteditable', () => {
+    renderNode({ type: 'RichEditor', props: { label: 'Body', description: 'Markdown is fine.' } });
+    const label = document.querySelector('label')!;
+    const editor = screen.getByLabelText(/Body/);
+    expect(label.id).toBeTruthy();
+    expect(editor.getAttribute('aria-labelledby')).toBe(label.id);
+    expect(editor.getAttribute('aria-describedby') ?? '').toContain('description');
+  });
+
+  it('lets a real label win over the TagInput hardcoded aria-label', () => {
+    renderNode({ type: 'TagInput', props: { label: 'Keywords' } });
+    // the old aria-label="Tags" must step aside, or the field announces the wrong name
+    expect(screen.queryByLabelText('Tags')).toBeNull();
+    expect(screen.getByLabelText('Keywords')).toBeTruthy();
+  });
+
+  it('keeps the label-less shape of these fields working and unlabelled', () => {
+    renderNode({ type: 'TagInput', props: { placeholder: 'Add…' } });
+    // no label rendered at all — the legacy shape stays valid
+    expect(document.querySelector('label')).toBeNull();
+    expect(screen.getByLabelText('Tags')).toBeTruthy();
+  });
+});
+
 describe('Stat semantic colour', () => {
   it('tints the value with the requested semantic colour', () => {
     renderNode({ type: 'Stat', props: { label: 'Spent', value: '34,287,494', color: 'red' } });
