@@ -2,3 +2,7 @@ node_modules/
 dist/
 *.log
 coverage/
+
+# Packed tarballs are build output: each release ships as a GitHub
+# release asset, never as a file committed into the source tree.
+*.tgz
