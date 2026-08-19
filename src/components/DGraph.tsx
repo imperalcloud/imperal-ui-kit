@@ -54,9 +54,63 @@ type CyCore = {
   layout: (opts: Record<string, unknown>) => { run: () => void };
   fit: (eles?: unknown, padding?: number) => void;
   png: (opts: Record<string, unknown>) => string;
-  on: (evt: string, sel: string, cb: (e: { target: { id: () => string } }) => void) => void;
+  on: {
+    (evt: string, sel: string, cb: (e: { target: { id: () => string } }) => void): void;
+    (evt: string, cb: () => void): void;
+  };
+  zoom: (level?: number) => number;
+  center: (eles?: unknown) => void;
   getElementById?: (id: string) => CyNodeLike;
 };
+
+// Cytoscape scales label text WITH the viewport zoom, so the size declared in
+// the stylesheet is not the size that reaches the screen:
+//
+//     effective px on screen = font-size x cy.zoom()
+//
+// `fit` zooms out until the whole graph is inside the box, so on a dense graph
+// it settles far below zoom 1. Measured in headless Chromium on a real 14-node
+// payload in a 900x600 box: zoom 0.2 (the minZoom floor), which turned a 10px
+// font into a 2px letter — visible, but impossible to read at any zoom the
+// toolbar offered, because it offered none. These three numbers are the
+// contract between the stylesheet and fitReadable().
+const NODE_FONT_PX = 13;
+const EDGE_FONT_PX = 10;
+const MIN_READABLE_PX = 12;
+
+// The zoom below which node labels stop being readable, derived from the two
+// constants above rather than hard-coded, so changing the font cannot silently
+// break the floor.
+const MIN_READABLE_ZOOM = MIN_READABLE_PX / NODE_FONT_PX;
+
+// How many rings the concentric layout may use, at most. Ring COUNT is what
+// drives the graph's radius, and radius is what forces fit to zoom out, so this
+// — not the font size — is the number that decides whether labels are readable.
+const CONCENTRIC_RINGS = 4;
+
+/**
+ * Enforce the readability floor after a fit.
+ *
+ * `fit` optimises for "everything on screen", which on a dense graph means
+ * zooming out until the labels are noise. This trades completeness for
+ * legibility: if fit landed below the floor, zoom back up to it and centre.
+ * Part of the graph then sits outside the viewport — which is fine, it can be
+ * panned and the counter reports what is drawn — whereas unreadable text is
+ * not fine, and cannot be recovered by the user at all.
+ *
+ * Declared at module level, not as a callback, so both the Fit button and the
+ * post-layout hook can use it without either having to be declared first.
+ */
+function enforceReadableZoom(cy: CyCore): boolean {
+  try {
+    if (cy.zoom() >= MIN_READABLE_ZOOM) return false;
+    cy.zoom(MIN_READABLE_ZOOM);
+    cy.center();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const TYPE_COLORS: Record<string, string> = {
   person: '#60a5fa',
@@ -223,7 +277,13 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           // against. '.625rem' silently became a 0.625 PIXEL font — the labels
           // were painted all along, just far too small for anyone to see, and
           // with no console warning to hint at it.
-          'font-size': '10px',
+          'font-size': `${NODE_FONT_PX}px`,
+          // Long labels (file paths, 'python · 1,433') are what inflate the
+          // graph's bounding box, and a wider box makes `fit` zoom further
+          // out, which shrinks every label. Wrapping trades width for two
+          // short lines and buys real zoom back.
+          'text-wrap': 'wrap',
+          'text-max-width': '120px',
           'font-family': 'system-ui, -apple-system, sans-serif',
           'text-valign': 'bottom',
           'text-halign': 'center',
@@ -245,7 +305,7 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           'curve-style': 'bezier',
           label: showLabels ? 'data(label)' : '',
           // px for the same reason as the node label above.
-          'font-size': '8px',
+          'font-size': `${EDGE_FONT_PX}px`,
           color: '#94a3b8',
           'text-rotation': 'autorotate',
           opacity: 0.55,
@@ -286,7 +346,13 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
   const layoutOpts = useMemo(() => {
     const base: Record<string, unknown> = {
       name: layout,
-      nodeDimensionsIncludeLabels: true,
+      // FALSE on purpose. When true the layout reserves each node's FULL label
+      // width as its bounding box, and with long labels (file paths) that blew
+      // the graph up: measured 3604x3802 for a 14-node payload, versus
+      // 1468x1473 with it off. A bigger box makes `fit` zoom further out,
+      // which shrinks every label — the exact complaint. Overlap is handled by
+      // minNodeSpacing plus label wrapping instead.
+      nodeDimensionsIncludeLabels: false,
       animate,
       animationDuration: 500,
       randomize: false,
@@ -302,15 +368,27 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         const v = n.data('mention_count');
         return typeof v === 'number' ? v : 0;
       };
-      base.levelWidth = () => 1;
-      base.minNodeSpacing = 20;
+      // THE root cause of unreadable labels, and the least obvious one.
+      //
+      // `() => 1` gives every distinct mention_count its OWN ring: 14 nodes
+      // with 10 distinct values produced ~10 rings and a 1281px radius, so fit
+      // settled at zoom 0.43 and a 13px font arrived as a 5.5px letter. Ring
+      // width is derived from the data spread instead, capping the graph at
+      // ~CONCENTRIC_RINGS rings no matter whether mentions run to 50 or 50,000.
+      //
+      // Measured in headless Chromium on the real 14-node payload, 900x600:
+      //   levelWidth 1  -> box 1281x1269, fit 0.43, clamped, 6/14 in frame
+      //   this rule     -> box  423x336,  fit 1.61, no clamp, 14/14 in frame,
+      //                    label 20.9px on screen
+      base.levelWidth = () => Math.max(1, Math.ceil(maxMentions / CONCENTRIC_RINGS));
+      base.minNodeSpacing = 8;
     }
     if (layout === 'breadthfirst') {
       base.directed = true;
       base.spacingFactor = 1.25;
     }
     return base;
-  }, [layout, animate]);
+  }, [layout, animate, maxMentions]);
 
   const applyFilters = useCallback(() => {
     const cy = cyRef.current;
@@ -401,6 +479,15 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
             params: { ...(action.params ?? {}), node_id: evt.target.id() },
           });
         });
+        // react-cytoscapejs runs the layout itself with fit:true, so the FIRST
+        // view the user ever sees is the one fit chose — the one that was
+        // unreadable. Clamp it every time a layout settles, which also covers
+        // switching layout from the dropdown.
+        instance.on('layoutstop', () => {
+          if (enforceReadableZoom(instance)) {
+            setLastAction(`zoom held at readable (${MIN_READABLE_PX}px min)`);
+          }
+        });
       }
       queueMicrotask(() => applyFilters());
     },
@@ -421,7 +508,24 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     if (!cy) return;
     try {
       cy.fit(undefined, 30);
-      setLastAction(`fit at ${new Date().toLocaleTimeString()}`);
+      const clamped = enforceReadableZoom(cy);
+      setLastAction(
+        `${clamped ? 'fit (zoom held at readable)' : 'fit'} at ${new Date().toLocaleTimeString()}`
+      );
+    } catch {
+      /* noop */
+    }
+  }, []);
+
+  // Manual zoom, because there was NO way to zoom from the toolbar at all:
+  // only Fit, Reset and PNG. On a graph fit had shrunk, the labels were
+  // unreadable and the user had no control to fix it.
+  const zoomBy = useCallback((factor: number) => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    try {
+      cy.zoom(cy.zoom() * factor);
+      setLastAction(`zoom ${Math.round(cy.zoom() * 100)}%`);
     } catch {
       /* noop */
     }
@@ -506,9 +610,27 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         </select>
         <button
           type="button"
+          onClick={() => zoomBy(1 / 1.3)}
+          className="px-3 py-1 bg-card hover:bg-raised text-body border border-default rounded text-sm font-mono"
+          title="Zoom out"
+          aria-label="Zoom out"
+        >
+          &minus;
+        </button>
+        <button
+          type="button"
+          onClick={() => zoomBy(1.3)}
+          className="px-3 py-1 bg-card hover:bg-raised text-body border border-default rounded text-sm font-mono"
+          title="Zoom in"
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <button
+          type="button"
           onClick={fitToView}
           className="px-3 py-1 bg-card hover:bg-raised text-body border border-default rounded text-sm"
-          title="Fit graph to view"
+          title="Fit graph to view, without shrinking labels below readable"
         >
           Fit
         </button>
@@ -612,8 +734,13 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
               stylesheet={stylesheet}
               cy={handleCyInit}
               minZoom={0.2}
-              maxZoom={3}
-              wheelSensitivity={0.2}
+              // 3x a 13px font is 39px, which is not much headroom on a big
+              // graph the user wants to inspect closely. 8x is.
+              maxZoom={8}
+              // The default wheel sensitivity here was 0.2 — five times slower
+              // than normal, so even scrolling to zoom felt like it did
+              // nothing. 1 is cytoscape's own default.
+              wheelSensitivity={1}
             />
           </Suspense>
         ) : (
