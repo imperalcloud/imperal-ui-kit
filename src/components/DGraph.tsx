@@ -77,11 +77,18 @@ type CyCore = {
 const NODE_FONT_PX = 13;
 const EDGE_FONT_PX = 10;
 const MIN_READABLE_PX = 12;
+// ...and the other end of the same contract. A floor alone is only half a
+// readability rule: once the grid was condensed, `fit` started zooming IN
+// (2.0x on a 14-node graph, 4.5x+ on a sparse one) and turned a 13px label into
+// 27-58px — a heading, not a graph label. 16px is large body copy; past ~18px
+// the text stops reading as an annotation of the node.
+const MAX_COMFORTABLE_PX = 16;
 
-// The zoom below which node labels stop being readable, derived from the two
-// constants above rather than hard-coded, so changing the font cannot silently
-// break the floor.
+// The zooms at which node labels stop being readable / start being shouted,
+// derived from the constants above rather than hard-coded, so changing the font
+// cannot silently break either end.
 const MIN_READABLE_ZOOM = MIN_READABLE_PX / NODE_FONT_PX;
+const MAX_COMFORTABLE_ZOOM = MAX_COMFORTABLE_PX / NODE_FONT_PX;
 
 // How many rings the concentric layout may use, at most. Ring COUNT is what
 // drives the graph's radius, and radius is what forces fit to zoom out, so this
@@ -89,26 +96,42 @@ const MIN_READABLE_ZOOM = MIN_READABLE_PX / NODE_FONT_PX;
 const CONCENTRIC_RINGS = 4;
 
 /**
- * Enforce the readability floor after a fit.
+ * Hold the post-fit zoom inside the readable BAND — both ends.
  *
- * `fit` optimises for "everything on screen", which on a dense graph means
- * zooming out until the labels are noise. This trades completeness for
- * legibility: if fit landed below the floor, zoom back up to it and centre.
- * Part of the graph then sits outside the viewport — which is fine, it can be
- * panned and the counter reports what is drawn — whereas unreadable text is
- * not fine, and cannot be recovered by the user at all.
+ * `fit` optimises for "everything on screen", which cuts both ways:
+ *
+ *  - On a dense graph it zooms out until the labels are noise. Holding the
+ *    floor trades completeness for legibility: part of the graph then sits
+ *    outside the viewport, which is fine (it pans, and the counter reports what
+ *    is drawn), whereas unreadable text cannot be recovered by the user at all.
+ *  - On a compact graph it zooms IN, and nothing used to stop it. Measured on
+ *    the real payloads after the grid was condensed: 2.0x/2.5x on 14 nodes and
+ *    3.6x-5.6x on 5 nodes, i.e. 26-73px labels. The model was right and the
+ *    pixels were wrong.
+ *
+ * Only `fit` is policed — the layout hook and the Fit button. Manual zoom
+ * (zoomBy, the wheel) is deliberately NOT clamped: that is the user's own
+ * intent, and the ceiling must never take away their ability to inspect.
  *
  * Declared at module level, not as a callback, so both the Fit button and the
  * post-layout hook can use it without either having to be declared first.
  */
-function enforceReadableZoom(cy: CyCore): boolean {
+function enforceReadableZoom(cy: CyCore): 'floor' | 'ceiling' | null {
   try {
-    if (cy.zoom() >= MIN_READABLE_ZOOM) return false;
-    cy.zoom(MIN_READABLE_ZOOM);
-    cy.center();
-    return true;
+    const z = cy.zoom();
+    if (z < MIN_READABLE_ZOOM) {
+      cy.zoom(MIN_READABLE_ZOOM);
+      cy.center();
+      return 'floor';
+    }
+    if (z > MAX_COMFORTABLE_ZOOM) {
+      cy.zoom(MAX_COMFORTABLE_ZOOM);
+      cy.center();
+      return 'ceiling';
+    }
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -409,7 +432,29 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
       base.condense = true;
       base.avoidOverlap = true;
       base.avoidOverlapPadding = 12;
-      base.spacingFactor = 0.85;
+      // Spacing decides how much of the panel the graph fills ONCE the zoom
+      // band above has had its say, so it has to be chosen WITH the band, not
+      // before it. Condensing hard (0.85) made the box so small that fit
+      // slammed into the ceiling on every payload: correct text, but the graph
+      // shrank into a corner of an empty window.
+      //
+      // Swept with tools/graph_zoom_probe.py, which mirrors this file's config
+      // and applies both clamps — the real 14-node payload, viewport 900/1100:
+      //
+      //   1.4 -> 16.0px  ceiling on BOTH widths, 14/14   (band never breathes)
+      //   1.8 -> 15.6px / 16.0px, 14/14
+      //   2.0 -> 14.4px / 16.0px, 14/14                  <-- chosen
+      //   2.2 -> 13.3px / 16.0px, 14/14                  (drifting to the floor)
+      //   2.6 -> 12.0px FLOOR / 14.3px, 14/14
+      //   4.0 -> box 1369x673, fit 0.61, floor, only 9/14 IN FRAME
+      //
+      // 2.0 is the one value where a dense graph lands INSIDE the band by
+      // itself on a narrow panel (14.4px, no clamp) and merely touches the
+      // ceiling on a wide one, with every node still in frame. Past ~2.4 the
+      // box outgrows the viewport and fit hits the floor; at 4.0 it is bad
+      // enough to push five nodes out of view, which is how the previous
+      // attempt at this fix was caught.
+      base.spacingFactor = 2.0;
     }
     if (layout === 'breadthfirst') {
       base.directed = true;
@@ -512,8 +557,11 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
         // unreadable. Clamp it every time a layout settles, which also covers
         // switching layout from the dropdown.
         instance.on('layoutstop', () => {
-          if (enforceReadableZoom(instance)) {
+          const held = enforceReadableZoom(instance);
+          if (held === 'floor') {
             setLastAction(`zoom held at readable (${MIN_READABLE_PX}px min)`);
+          } else if (held === 'ceiling') {
+            setLastAction(`zoom held at comfortable (${MAX_COMFORTABLE_PX}px max)`);
           }
         });
       }
@@ -536,10 +584,12 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     if (!cy) return;
     try {
       cy.fit(undefined, 30);
-      const clamped = enforceReadableZoom(cy);
-      setLastAction(
-        `${clamped ? 'fit (zoom held at readable)' : 'fit'} at ${new Date().toLocaleTimeString()}`
-      );
+      const held = enforceReadableZoom(cy);
+      const note =
+        held === 'floor' ? 'fit (zoom held at readable)'
+        : held === 'ceiling' ? 'fit (zoom held at comfortable)'
+        : 'fit';
+      setLastAction(`${note} at ${new Date().toLocaleTimeString()}`);
     } catch {
       /* noop */
     }

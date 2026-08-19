@@ -235,10 +235,16 @@ describe('graph render regressions', () => {
     render(<DeclarativeRenderer node={GRAPH} />);
     await waitFor(() => expect(cyRecord.layoutStopBindings).toBe(1));
 
-    // A sparse graph fits at a perfectly readable zoom (measured: 1.42 for the
-    // 5-node repo). Touching it would fight the user's own view. Without this
-    // control the test above would pass even if the clamp ran unconditionally.
-    cyRecord.zoom = 1.42;
+    // A zoom already INSIDE the band must be left exactly as it is: touching it
+    // would fight the user's own view. Without this control the tests either
+    // side would pass even if the clamp ran unconditionally.
+    //
+    // This used to be 1.42, from a measurement of the 5-node repo back when the
+    // rule was floor-only. 1.42 x 13px = 18.5px, which the ceiling now — quite
+    // rightly — pulls down: that reading is exactly the oversized-label
+    // complaint this release fixes. 1.1 x 13px = 14.3px sits inside the band,
+    // so it still tests "leave a good zoom alone" and not "no ceiling exists".
+    cyRecord.zoom = 1.1;
     cyRecord.layoutStopHandlers[0]();
 
     expect(cyRecord.zoomSets, 'a readable zoom must not be rewritten').toHaveLength(0);
@@ -368,5 +374,69 @@ describe('graph render regressions', () => {
     // must not open on it.
     expect(names, 'the panel must open on grid').toContain('grid');
     expect(names, 'a force-directed first paint drifts out of frame').not.toContain('cose-bilkent');
+  });
+
+  /**
+   * The mirror image of the floor test, and the bug the floor alone allowed.
+   *
+   * A floor is only half a readability rule. Once the grid was condensed, `fit`
+   * started zooming IN and nothing stopped it: measured on the real payloads,
+   * 2.0x/2.5x on 14 nodes and 3.6x-5.6x on 5 nodes, turning a 13px label into
+   * 26-58px. The font was never wrong -- the zoom was unbounded on one side.
+   */
+  it('never lets fit blow labels up either -- the band has a ceiling', async () => {
+    stylesheets.length = 0;
+    cyRecord.layoutStopBindings = 0;
+    cyRecord.layoutStopHandlers.length = 0;
+    cyRecord.zoomSets.length = 0;
+    cyRecord.centers = 0;
+
+    render(<DeclarativeRenderer node={GRAPH} />);
+    await waitFor(() => expect(cyRecord.layoutStopBindings).toBe(1));
+
+    const nodeFont = parseFloat(String(styleOf(stylesheets[0], 'node')['font-size'] ?? '0'));
+
+    // fit landed far ABOVE the band, exactly as it did on the sparse payload.
+    cyRecord.zoom = 4.5;
+    cyRecord.layoutStopHandlers[0]();
+
+    expect(cyRecord.zoomSets, 'the ceiling must be applied after a layout').toHaveLength(1);
+    const clamped = cyRecord.zoomSets[0];
+    expect(clamped * nodeFont, 'effective label size after clamping').toBeLessThanOrEqual(16);
+    // ...and it must not overcorrect into the floor it was meant to complement.
+    expect(clamped * nodeFont, 'clamping down must stay readable').toBeGreaterThanOrEqual(12);
+    expect(cyRecord.centers, 'clamping must re-centre, or the graph jumps off-screen').toBe(1);
+  });
+
+  /**
+   * Spacing and the zoom band are ONE decision, not two: spacing sets the box,
+   * the box decides what `fit` picks, and the band catches what is left. Picked
+   * by sweeping the real 14-node payload with tools/graph_zoom_probe.py, which
+   * mirrors DGraph's own config and applies both clamps (viewport 900/1100):
+   *
+   *   0.85 -> 26.6px, graph shrinks into a corner of an empty panel
+   *   1.4  -> 16.0px on BOTH widths: pinned to the ceiling, band never breathes
+   *   2.0  -> 14.4px / 16.0px, 14/14 in frame                        <-- chosen
+   *   2.6  -> 12.0px, already scraping the floor
+   *   4.0  -> box 1369x673, fit 0.61, floor hit, only 9/14 IN FRAME
+   *
+   * The 4.0 row is why this test exists: a first attempt at fixing the
+   * oversized labels quietly pushed five nodes out of view, and only a
+   * measurement caught it.
+   */
+  it('spaces the grid so a dense graph lands inside the band by itself', async () => {
+    graphProps.length = 0;
+    render(<DeclarativeRenderer node={{ ...GRAPH, props: { ...GRAPH.props, layout: 'grid' } }} />);
+
+    const gridOf = () =>
+      graphProps
+        .map((p) => p.layout as Record<string, unknown> | undefined)
+        .find((l) => l?.name === 'grid');
+    await waitFor(() => expect(gridOf()).toBeTruthy());
+    const spacing = Number((gridOf() as Record<string, unknown>).spacingFactor);
+
+    expect(spacing, 'condensed this hard, fit pins to the ceiling').toBeGreaterThan(1.5);
+    expect(spacing, 'spread this wide, the box outgrows the viewport and nodes leave frame')
+      .toBeLessThanOrEqual(2.4);
   });
 });
