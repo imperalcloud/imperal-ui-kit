@@ -167,7 +167,15 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
   const {
     nodes = [],
     edges = [],
-    layout: initialLayout = 'cose-bilkent',
+    // Grid by default. The old default was 'cose-bilkent', which is
+    // force-directed: it animates into place and drifts out of frame on first
+    // paint, so the first thing a user sees is a graph that is still moving and
+    // partly off-screen. Grid is deterministic AND measures as the most
+    // readable of the deterministic options on the real 14-node payload
+    // (box 411x195, fit 2.04, label 26.6px, 14/14 in frame — see the grid
+    // branch in layoutOpts). Callers can still pass `layout`, and users can
+    // switch from the toolbar picker.
+    layout: initialLayout = 'grid',
     height = 600,
     min_node_size = 10,
     max_node_size = 50,
@@ -382,6 +390,26 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
       //                    label 20.9px on screen
       base.levelWidth = () => Math.max(1, Math.ceil(maxMentions / CONCENTRIC_RINGS));
       base.minNodeSpacing = 8;
+    }
+    if (layout === 'grid') {
+      // Grid is the DEFAULT layout, so its tuning is not cosmetic.
+      //
+      // Untuned, cytoscape's grid spreads nodes to fill the container's aspect
+      // ratio, so the layout box grows with the viewport instead of with the
+      // data. Measured on the real 14-node MCP-Configs payload at 900x600:
+      //   untuned -> box 873x465, fit 0.96, label 12.5px  (right ON the floor)
+      //   tuned   -> box 411x195, fit 2.04, label 26.6px, 14/14 in frame
+      // At 1100x600 the untuned box grew to 1033x465 while the tuned one stayed
+      // 411x195 (fit 2.53, 32.9px) — condense is what decouples the layout from
+      // the container size.
+      //
+      // avoidOverlap + padding replace the label-width reservation that
+      // nodeDimensionsIncludeLabels:false deliberately gives up, so wrapped
+      // labels in adjacent cells do not collide.
+      base.condense = true;
+      base.avoidOverlap = true;
+      base.avoidOverlapPadding = 12;
+      base.spacingFactor = 0.85;
     }
     if (layout === 'breadthfirst') {
       base.directed = true;

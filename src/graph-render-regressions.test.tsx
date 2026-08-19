@@ -318,4 +318,55 @@ describe('graph render regressions', () => {
     expect(width, 'a per-value ring width is the bug').toBeGreaterThan(1);
     expect(rings, 'radius must stay bounded, or fit zooms the text away').toBeLessThanOrEqual(5);
   });
+
+  /**
+   * Grid is the layout the panel opens on, so it needs the same scrutiny
+   * concentric got — an untuned grid is the SECOND way fit can shrink the text.
+   *
+   * cytoscape's grid spreads nodes to fill the container's aspect ratio, so the
+   * layout box grows with the VIEWPORT instead of with the data. Measured in
+   * headless Chromium on the real 14-node MCP-Configs payload
+   * (tools/graph_zoom_probe.py, `grid`):
+   *
+   *   untuned, 900x600   box  873x465  fit 0.96  ->  12.5px  (ON the floor)
+   *   untuned, 1100x600  box 1033x465  fit 1.01  ->  13.1px  (box grew with it)
+   *   tuned,   900x600   box  411x195  fit 2.04  ->  26.6px
+   *   tuned,   1100x600  box  411x195  fit 2.53  ->  32.9px
+   *
+   * `condense` is what decouples the box from the container; avoidOverlap plus
+   * padding replaces the label-width reservation that
+   * nodeDimensionsIncludeLabels:false deliberately gives up.
+   */
+  it('condenses the grid, so the box follows the data and not the viewport', async () => {
+    graphProps.length = 0;
+    render(<DeclarativeRenderer node={{ ...GRAPH, props: { ...GRAPH.props, layout: 'grid' } }} />);
+
+    const gridOf = () =>
+      graphProps
+        .map((p) => p.layout as Record<string, unknown> | undefined)
+        .find((l) => l?.name === 'grid');
+    await waitFor(() => expect(gridOf()).toBeTruthy());
+    const layout = gridOf() as Record<string, unknown>;
+
+    expect(layout.condense, 'without condense the box grows with the viewport').toBe(true);
+    expect(layout.avoidOverlap, 'wrapped labels in adjacent cells collide').toBe(true);
+    expect(Number(layout.avoidOverlapPadding), 'labels need breathing room').toBeGreaterThan(0);
+    expect(layout.nodeDimensionsIncludeLabels, 'label dims inflate the box').toBe(false);
+  });
+
+  it('opens on grid, the layout measured most readable of the deterministic ones', async () => {
+    graphProps.length = 0;
+    // GRAPH deliberately sets NO layout: this asserts the DEFAULT, not a prop.
+    render(<DeclarativeRenderer node={GRAPH} />);
+    await waitFor(() => expect(graphProps.length).toBeGreaterThan(0));
+
+    const names = graphProps
+      .map((p) => (p.layout as Record<string, unknown> | undefined)?.name)
+      .filter(Boolean);
+    expect(names.length, 'no layout was ever handed to cytoscape').toBeGreaterThan(0);
+    // cose-bilkent drifts out of frame on first paint, which is why the panel
+    // must not open on it.
+    expect(names, 'the panel must open on grid').toContain('grid');
+    expect(names, 'a force-directed first paint drifts out of frame').not.toContain('cose-bilkent');
+  });
 });
