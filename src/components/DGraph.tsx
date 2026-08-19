@@ -168,6 +168,14 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<CyCore | null>(null);
+  // Which cy instance already has our 'tap' listener. See handleCyInit.
+  const tapBoundRef = useRef<unknown>(null);
+  // The click config, read at event time instead of captured at bind time, so
+  // the listener never needs re-binding to stay current.
+  const clickRef = useRef({ on_node_click, onAction });
+  useEffect(() => {
+    clickRef.current = { on_node_click, onAction };
+  }, [on_node_click, onAction]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -210,7 +218,12 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           label: 'data(label)',
           width: `mapData(size, 0, 50, ${min_node_size}, ${max_node_size})`,
           height: `mapData(size, 0, 50, ${min_node_size}, ${max_node_size})`,
-          'font-size': '.625rem',
+          // px, NOT rem: cytoscape draws labels on a canvas and parses this
+          // itself, with no CSS engine and no root font-size to resolve
+          // against. '.625rem' silently became a 0.625 PIXEL font — the labels
+          // were painted all along, just far too small for anyone to see, and
+          // with no console warning to hint at it.
+          'font-size': '10px',
           'font-family': 'system-ui, -apple-system, sans-serif',
           'text-valign': 'bottom',
           'text-halign': 'center',
@@ -231,7 +244,8 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier',
           label: showLabels ? 'data(label)' : '',
-          'font-size': '.5rem',
+          // px for the same reason as the node label above.
+          'font-size': '8px',
           color: '#94a3b8',
           'text-rotation': 'autorotate',
           opacity: 0.55,
@@ -357,33 +371,40 @@ export const DGraph: UIComponent = ({ node, onAction }) => {
     }
   }, [search]);
 
+  // NO layout run here. react-cytoscapejs already runs the layout itself —
+  // once on mount, and again whenever the `layout` prop differs — so running
+  // it here too meant TWO animated, fit:true layout passes per change. On
+  // first paint that reads as the graph loading, jumping and re-centring
+  // several times over. This only records what happened, for the status line.
   useEffect(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    try {
-      cy.layout(layoutOpts).run();
-      setLastAction(`layout: ${layout} at ${new Date().toLocaleTimeString()}`);
-    } catch (err) {
-      console.warn('[DGraph] layout failed:', err);
-    }
-  }, [layout, layoutOpts]);
+    if (!cyRef.current) return;
+    setLastAction(`layout: ${layout} at ${new Date().toLocaleTimeString()}`);
+  }, [layout]);
 
   const handleCyInit = useCallback(
     (cy: unknown) => {
       cyRef.current = cy as CyCore;
       const instance = cyRef.current;
-      if (on_node_click && onAction && instance) {
+      if (!instance) return;
+      // react-cytoscapejs invokes its `cy` prop on EVERY update, not just on
+      // mount, so binding unconditionally added ANOTHER 'tap' listener each
+      // time. They accumulated, and a single click then dispatched the same
+      // navigation two, three, four times over. Bind once per instance and
+      // read the current config from a ref instead.
+      if (tapBoundRef.current !== cy) {
+        tapBoundRef.current = cy;
         instance.on('tap', 'node', (evt) => {
-          const nodeId = evt.target.id();
-          onAction({
-            ...on_node_click,
-            params: { ...(on_node_click.params ?? {}), node_id: nodeId },
+          const { on_node_click: action, onAction: dispatch } = clickRef.current;
+          if (!action || !dispatch) return;
+          dispatch({
+            ...action,
+            params: { ...(action.params ?? {}), node_id: evt.target.id() },
           });
         });
       }
       queueMicrotask(() => applyFilters());
     },
-    [on_node_click, onAction, applyFilters]
+    [applyFilters]
   );
 
   const toggleType = useCallback((t: string) => {
