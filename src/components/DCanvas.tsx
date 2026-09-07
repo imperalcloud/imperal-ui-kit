@@ -116,9 +116,10 @@ export const DCanvas: UIComponent = ({ node, onAction }) => {
           const posX = n.x ?? 50;
           const posY = n.y ?? 50;
           return (
-            <div
+            <button
+              type="button"
               key={n.id}
-              className={`absolute cursor-pointer transition-transform hover:scale-105 rounded-lg border px-3 py-2 shadow-sm ${getNodeColor(
+              className={`absolute text-left cursor-pointer transition-transform hover:scale-105 rounded-lg border px-3 py-2 shadow-sm ${getNodeColor(
                 n.status
               )}`}
               style={{
@@ -131,6 +132,12 @@ export const DCanvas: UIComponent = ({ node, onAction }) => {
                   onAction(n.on_click);
                 }
               }}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && n.on_click && onAction) {
+                  e.preventDefault();
+                  onAction(n.on_click);
+                }
+              }}
             >
               <div className="flex items-center gap-1.5 font-semibold text-xs truncate">
                 {n.icon ? <span>{n.icon}</span> : null}
@@ -140,7 +147,7 @@ export const DCanvas: UIComponent = ({ node, onAction }) => {
                 <span className="uppercase tracking-wider">{n.type ?? 'node'}</span>
                 <span>{n.status ?? 'idle'}</span>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

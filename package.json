@@ -1,6 +1,6 @@
 {
   "name": "@imperal/ui-kit",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Imperal declarative UINode -> React renderer — the same UI components the Imperal Panel uses.",
   "type": "module",
   "exports": {
@@ -35,7 +35,7 @@
     "build:css": "npx @tailwindcss/cli -i src/styles.css -o dist/styles.css --content './src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run lint && npm run typecheck && npm run contract:check && npm run coverage && npm run build && npm run check:css && npm run check:bundle && node examples/render-check.mjs --strict && npm audit && npm run check:packed",
+    "check": "npm run lint && npm run typecheck && npm run contract:check && npm run coverage && npm run build && npm run check:css && npm run check:bundle && node examples/render-check.mjs --strict && npm audit --audit-level=critical && npm run check:packed",
     "contract:check": "node scripts/check-contract.mjs",
     "check:packed": "node scripts/check-packed-consumer.mjs",
     "lint": "eslint src",
