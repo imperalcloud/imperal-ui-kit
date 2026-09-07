@@ -53,7 +53,10 @@
     "toggle",
     "tooltip",
     "tree",
-    "video"
+    "video",
+    "ghost",
+    "agentpresence",
+    "canvas"
   ],
   "nestedNodeTypes": {
     "listitem": "Serialized by ui.ListItem and consumed inside the List items prop."

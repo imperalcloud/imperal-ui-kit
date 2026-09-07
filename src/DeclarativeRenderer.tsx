@@ -79,20 +79,46 @@ export interface DeclarativeRendererProps {
   direction?: ImperalUIProviderProps['direction'];
 }
 
-function RendererNode({ node, onAction, fallbackMessage, onError }: {
+// ── Signal resolution helper ──────────────────────────────────────────────
+export function resolveSignalValue(val: unknown, signalsState?: Record<string, unknown>): unknown {
+  if (val && typeof val === 'object' && '__signal__' in (val as Record<string, unknown>)) {
+    const sigKey = (val as Record<string, unknown>).__signal__ as string;
+    if (signalsState && sigKey in signalsState) {
+      return signalsState[sigKey];
+    }
+    return (val as Record<string, unknown>).default;
+  }
+  return val;
+}
+
+function resolveNodeProps(props: Record<string, unknown> | undefined, signalsState?: Record<string, unknown>): Record<string, unknown> {
+  if (!props) return {};
+  const resolved: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(props)) {
+    resolved[k] = resolveSignalValue(v, signalsState);
+  }
+  return resolved;
+}
+
+function RendererNode({ node, onAction, fallbackMessage, onError, signalsState }: {
   node: UINode;
   onAction?: import('./types').ActionHandler;
   fallbackMessage: string;
   onError?: (error: unknown, context: { nodeType?: string }) => void;
+  signalsState?: Record<string, unknown>;
 }) {
   const Component = getComponent(node.type);
   if (!Component) {
     if (process.env.NODE_ENV === 'development') return <div role="alert" className="rounded border border-danger/40 bg-danger/10 px-2 py-1 text-xs text-danger">Unknown component: <code>{node.type}</code></div>;
     return null;
   }
+  const effectiveNode: UINode = {
+    ...node,
+    props: resolveNodeProps(node.props, signalsState),
+  };
   return (
     <NodeErrorBoundary nodeType={node.type} identity={`${node.id ?? node.key ?? node.type}:${node.revision ?? ''}`} fallbackMessage={fallbackMessage} onError={onError}>
-      <Component node={node} onAction={onAction} />
+      <Component node={effectiveNode} onAction={onAction} />
     </NodeErrorBoundary>
   );
 }

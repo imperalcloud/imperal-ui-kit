@@ -63,6 +63,9 @@ import { DSlideOver } from './components/DSlideOver';
 // Feedback
 import { DLoading } from './components/DLoading';
 import { DError } from './components/DError';
+import { DGhost } from './components/DGhost';
+import { DAgentPresence } from './components/DAgentPresence';
+import { DCanvas } from './components/DCanvas';
 
 export function registerAllComponents(): void {
   // Layout
@@ -141,4 +144,9 @@ export function registerAllComponents(): void {
   // Feedback
   registerComponent('loading', DLoading);
   registerComponent('error', DError);
+  registerComponent('ghost', DGhost);
+  registerComponent('agentpresence', DAgentPresence);
+
+  // Spatial & Interactive Canvas
+  registerComponent('canvas', DCanvas);
 }
