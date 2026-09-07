@@ -55,6 +55,7 @@
     "@imperal/design-tokens": "file:../imperal-design-tokens",
     "@tailwindcss/cli": "^4",
     "@tailwindcss/typography": "^0.5",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.3",
     "@types/dompurify": "^3.0.5",
