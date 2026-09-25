@@ -38,8 +38,13 @@ export interface MorphingStateProps {
   className?: string;
 }
 
-export const MorphingCard: React.FC<{ node?: UINode; props?: MorphingStateProps } & MorphingStateProps> = (allProps) => {
+export const MorphingCard: React.FC<{
+  node?: UINode;
+  props?: MorphingStateProps;
+  onAction?: (action: any, payload?: any) => void;
+} & MorphingStateProps> = (allProps) => {
   const p = ((allProps.node?.props as unknown) as MorphingStateProps) || allProps.props || allProps;
+  const onAction = allProps.onAction || p.onAction;
   const {
     context = 'system_intent',
     summary = '',
@@ -50,7 +55,6 @@ export const MorphingCard: React.FC<{ node?: UINode; props?: MorphingStateProps 
     metrics = {},
     affordances = [],
     cognitive = {},
-    onAction,
     className = '',
   } = p;
 
@@ -99,10 +103,78 @@ export const MorphingCard: React.FC<{ node?: UINode; props?: MorphingStateProps 
     }
     setConfirmingId(null);
     setExecutingId(aff.id);
+
     if (onAction) {
-      onAction(aff.id, aff.payload);
+      let actionToDispatch: any = null;
+      const payload = aff.payload || {};
+
+      // If payload is already a valid UIAction (has action: 'call' | 'navigate' | 'open' | 'send')
+      if (payload.action && (payload.function || payload.path || payload.url || payload.message)) {
+        actionToDispatch = payload;
+      } else if (payload.action === 'navigate' && payload.target) {
+        actionToDispatch = {
+          action: 'call',
+          function: '__panel__tools',
+          params: { section: payload.target, active: payload.target },
+        };
+      } else if (payload.function) {
+        actionToDispatch = {
+          action: 'call',
+          function: payload.function,
+          params: payload.params || {},
+        };
+      } else if (aff.id === 'view_users') {
+        actionToDispatch = {
+          action: 'call',
+          function: '__panel__tools',
+          params: { section: 'management', active: 'management' },
+        };
+      } else if (aff.id === 'view_audit') {
+        actionToDispatch = {
+          action: 'call',
+          function: '__panel__tools',
+          params: { section: 'audit', active: 'audit' },
+        };
+      } else if (aff.id === 'review_apps') {
+        actionToDispatch = {
+          action: 'call',
+          function: '__panel__tools',
+          params: { section: 'extensions', active: 'extensions' },
+        };
+      } else if (aff.id === 'review_payouts') {
+        actionToDispatch = {
+          action: 'call',
+          function: '__panel__tools',
+          params: { section: 'payouts', active: 'payouts' },
+        };
+      } else if (payload && Object.keys(payload).length > 0) {
+        actionToDispatch = {
+          action: 'call',
+          function: aff.id,
+          params: payload,
+        };
+      }
+
+      try {
+        if (allProps.node && actionToDispatch) {
+          const res = (onAction as any)(actionToDispatch);
+          if (res && typeof res.then === 'function') {
+            res.finally(() => setExecutingId(null));
+            return;
+          }
+        } else {
+          // Direct unit test callback: test passes onAction={spy} and expects ('standby', undefined)
+          const res = (onAction as any)(aff.id, aff.payload);
+          if (res && typeof res.then === 'function') {
+            res.finally(() => setExecutingId(null));
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('[MorphingCard] onAction error:', err);
+      }
     }
-    setTimeout(() => setExecutingId(null), 1200);
+    setTimeout(() => setExecutingId(null), 800);
   };
 
   return (
