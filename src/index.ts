@@ -13,6 +13,9 @@ export { registerAllComponents } from './register-all';
 
 export type { UINode, UIAction, UIComponent, ListItemData, Column, ChartDataPoint } from './types';
 
+export { MorphingCard } from './components/MorphingCard';
+export type { MorphingStateProps, AffordanceItem, CognitiveContextData } from './components/MorphingCard';
+
 export { Stack } from './components/Stack';
 export { Grid } from './components/Grid';
 export { DTabs } from './components/DTabs';

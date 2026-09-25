@@ -2,6 +2,7 @@
 // Import this once at app startup (e.g. in layout.tsx or a top-level provider).
 
 import { registerComponent } from './registry';
+import { MorphingCard } from './components/MorphingCard';
 
 import { Stack } from './components/Stack';
 import { Grid } from './components/Grid';
@@ -71,6 +72,10 @@ export function registerAllComponents(): void {
   // Layout
   registerComponent('stack', Stack);
   registerComponent('grid', Grid);
+  registerComponent('morphing_state', MorphingCard as any);
+  registerComponent('morphing_card', MorphingCard as any);
+  registerComponent('MorphingState', MorphingCard as any);
+  registerComponent('MorphingCard', MorphingCard as any);
   registerComponent('row', Stack);
   registerComponent('column', Stack);
   registerComponent('page', DPage);
