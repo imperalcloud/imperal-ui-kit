@@ -183,6 +183,7 @@ export const MorphingCard: React.FC<{
       data-testid="morphing-card"
       data-urgency={urgency}
       data-risk={risk}
+      data-icnli-source={(allProps.node as any)?.source || `morphing:${context}`}
     >
       {/* Dynamic ambient header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800/80 pb-4">

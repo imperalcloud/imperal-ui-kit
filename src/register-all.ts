@@ -1,3 +1,4 @@
+import { DStage } from './components/DStage';
 // Registers all declarative UI components into the global registry.
 // Import this once at app startup (e.g. in layout.tsx or a top-level provider).
 
@@ -155,3 +156,5 @@ export function registerAllComponents(): void {
   // Spatial & Interactive Canvas
   registerComponent('canvas', DCanvas);
 }
+
+registerComponent('Stage', DStage);

@@ -114,7 +114,10 @@ function RendererNode({ node, onAction, fallbackMessage, onError, signalsState }
   }
   const effectiveNode: UINode = {
     ...node,
-    props: resolveNodeProps(node.props, signalsState),
+    props: {
+      ...resolveNodeProps(node.props, signalsState),
+      'data-icnli-source': (node as any).source || (node as any).props?.source || `${node.type}:${node.id || node.key || 'root'}`,
+    },
   };
   return (
     <NodeErrorBoundary nodeType={node.type} identity={`${node.id ?? node.key ?? node.type}:${node.revision ?? ''}`} fallbackMessage={fallbackMessage} onError={onError}>
